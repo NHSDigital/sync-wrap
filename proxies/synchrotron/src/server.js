@@ -1,10 +1,13 @@
 
 const express = require('express');
 const app = express();
+const log = require('loglevel');
 
 
 function setup(options) {
     app.locals.upstream = new URL(options.UPSTREAM || "http://localhost");
+    log.setLevel(options.LOG_LEVEL || "info");
+    log.info('configured with: ' + options.UPSTREAM);
     app.locals.allow_insecure = (options.ALLOW_INSECURE || "false") === "true";
 
     let https = app.locals.upstream.protocol === "https:";
@@ -39,7 +42,8 @@ app.all('/sync*', handlers.proxy);
 
 
 const server = app.listen(process.env.PORT || 9000, function() {
-    console.log('server listening on port %d', server.address().port)
+    log.setDefaultLevel("info");
+    log.info('server listening on port %d', server.address().port);
 });
 
 module.exports = {server: server, setup: setup};

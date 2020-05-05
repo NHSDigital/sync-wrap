@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js --use_strict",
+    "start": "node server.js --use_strict",
     "debug": "nodemon --inspect server.js"
   },
   "author": "",
@@ -11,6 +11,7 @@
   "dependencies": {
     "agentkeepalive": "^4.1.2",
     "express": "^4.17.1",
+    "loglevel": "^1.6.8",
     "superagent": "^5.2.2"
   },
   "devDependencies": {

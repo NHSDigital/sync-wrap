@@ -4,4 +4,4 @@
   - name: NODE_ENV
     value: production
   - name: UPSTREAM
-    value: https://www.google.co.uk
+    value: https://internal-dev.api.service.nhs.uk/async-test

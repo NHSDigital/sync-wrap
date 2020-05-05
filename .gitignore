@@ -19,7 +19,9 @@ Pipfile.lock
 docker-compose.override.yml
 *.squashfs
 *.retry
-node_modules
+node_modules/
+
+
 
 # Packaging
 build/

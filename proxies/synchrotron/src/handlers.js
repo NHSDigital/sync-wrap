@@ -161,11 +161,9 @@ class MultiValueHeaders {
 
 }
 
-
-
-
-
 async function ping(req, res) { res.json({ping: "pong"}); }
+
+const log = require('loglevel');
 
 
 async function proxy(proxy_req, proxy_resp) {
@@ -209,7 +207,7 @@ async function proxy(proxy_req, proxy_resp) {
 
     let respond_async = headers.prefer === "respond-async";
 
-    console.log(proxy_req.method + ' ' + path);
+    log.info(proxy_req.method + ' ' + path);
 
     let options = Object.assign(
         {
@@ -237,7 +235,7 @@ async function proxy(proxy_req, proxy_resp) {
 
             request.on('timeout', () => {
                 let timeout = opts.timeout || 5000;
-                console.log("timeout! " + (timeout / 1000) + " seconds expired");
+                log.warn("timeout! " + (timeout / 1000) + " seconds expired");
                 // todo: should we abort the request ???
                 reject({error: 'timeout'});
             });
@@ -311,7 +309,7 @@ async function proxy(proxy_req, proxy_resp) {
                 await pipeline(response, proxy_resp);
             })
             .catch(async (fin) => {
-                console.log(fin.error);
+                log.error(fin.error);
 
                 if (fin.error === "timeout") {
                     let response = options.last_response;
@@ -348,7 +346,7 @@ async function proxy(proxy_req, proxy_resp) {
             await pipeline(response, proxy_resp);
         })
         .catch(async (fin) => {
-            console.log(fin.error);
+            log.error(fin.error);
             proxy_resp.status(fin.error === "timeout" ? 504 : 502);
             proxy_resp.end();
         });
