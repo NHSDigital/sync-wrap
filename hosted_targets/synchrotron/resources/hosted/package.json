@@ -1,0 +1,22 @@
+{
+  "name": "synchrotron",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js --use_strict",
+    "debug": "nodemon --inspect server.js"
+  },
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "agentkeepalive": "^4.1.2",
+    "express": "^4.17.1",
+    "superagent": "^5.2.2"
+  },
+  "devDependencies": {
+    "chai": "^4 .2.0",
+    "nodemon": "^2.0.3",
+    "mocha": "^7.1.2",
+    "supertest": "^4.0.2"
+  }
+}

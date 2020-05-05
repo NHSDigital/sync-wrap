@@ -1,0 +1,46 @@
+version: '3.6'
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.100.0/24
+
+services:
+
+  localstack:
+    container_name: localstack
+    image: "localstack/localstack"
+    restart: always
+    environment:
+      - SERVICES=apigateway,dynamodb,firehose,kinesis,lambda,s3,secretsmanager,sns,sqs,ssm,stepfunctions,iam,cloudwatch
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - LAMBDA_EXECUTOR=docker-reuse
+      - LAMBDA_DOCKER_NETWORK=host
+      - LOCALSTACK_HOSTNAME=localhost
+      - DEFAULT_REGION=eu-west-2
+    ports:
+      - "4567-4700:4567-4700"
+      - "8091:8080"  # simple web console
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+
+
+  slowapp:
+    container_name: slowapp
+    build:
+      context: ./
+      dockerfile: ./docker/apps/Dockerfile
+    command: ["slowapp"]
+    healthcheck:
+      test: "curl --fail https://localhost/ping -k || exit 1"
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    ports:
+      - "9003:443"
+    depends_on:
+      - localstack
+

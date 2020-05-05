@@ -1,0 +1,6 @@
+.venv
+.env
+build
+dist
+.idea
+.git

@@ -1,0 +1,7 @@
+ runtime: node
+ runtimeVersion: 12.16.3
+ env:
+  - name: NODE_ENV
+    value: production
+  - name: UPSTREAM
+    value: https://www.google.co.uk

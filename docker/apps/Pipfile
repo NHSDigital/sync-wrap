@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+name = "pypi"
+verify_ssl = true
+
+[requires]
+python_version = "3.7"
+
+[packages]
+urllib3 = "==1.25.3"
+aiohttp = "*"
+aiomysql = "*"
+botocore = "*"
+boto3 = "*"
+gunicorn = ">=19.9.0"
+pipdeptree = "*"
+
+[dev-packages]
+apigee-tool = "*"
+ipython = "*"
+mypy = "*"
+pylint = "==2.3.1"
+pytest = "==5.3.5"
+pytest-asyncio = "==0.10.0"
+pytest-aiohttp = "*"

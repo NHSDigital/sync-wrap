@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+name = "pypi"
+verify_ssl = true
+
+[requires]
+python_version = "3.7"
+
+[packages]
+requests = "*"
+#shared = {path = ".", editable = true}
+
+[dev-packages]
+apigee-tool = "*"
+mypy = "*"
+ipython = "*"
+pipfile = "*"
+pylint = "==2.3.1"
+pytest = "*"
+pytest-asyncio = "==0.10.0"
+pytest-mock = "==1.11.2"
+pytest-runner = "*"
+requests-mock = "*"
+typing_inspect = "*"
+wheel = "*"
