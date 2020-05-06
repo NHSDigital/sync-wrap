@@ -1,10 +1,10 @@
 {
-  "name": "synchrotron",
+  "name": "sync-wrap",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node server.js --use_strict",
-    "debug": "nodemon --inspect server.js"
+    "start": "node src/server.js --use_strict",
+    "debug": "nodemon --inspect src/server.js"
   },
   "author": "",
   "license": "",
