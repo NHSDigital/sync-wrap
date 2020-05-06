@@ -62,7 +62,7 @@ class SlowApp(Application):  # pylint: disable=no-self-use
 
         self.add_routes(
             [
-                get('/ping', self.ping_handler),
+                get('/_ping', self.ping_handler),
                 get('/slow', self.slow_handler),
                 delete('/poll', self.delete_handler),
                 get('/poll', self.poll_handler)
@@ -78,12 +78,7 @@ class SlowApp(Application):  # pylint: disable=no-self-use
         task_uuid = None
         try:
 
-            if request.path == '/ping':
-                return json_response(await handler(request))
-
-            response = json_response(await handler(request))  # type: web.Response
-
-            return response
+            return json_response(await handler(request))
 
         except HTTPError as e:
             return e
@@ -121,7 +116,7 @@ class SlowApp(Application):  # pylint: disable=no-self-use
 
     async def delete_handler(self, request):
 
-        poll_id = request.query.get('id', uuid4().hex)
+        poll_id = request.query.get('id')
 
         if poll_id not in self.tracked:
             raise HTTPNotFound()
@@ -132,7 +127,7 @@ class SlowApp(Application):  # pylint: disable=no-self-use
 
     async def poll_handler(self, request: Request):
 
-        poll_id = request.query.get('id', uuid4().hex)
+        poll_id = request.query.get('id')
 
         poll_count = request.cookies.get('poll-count')
 

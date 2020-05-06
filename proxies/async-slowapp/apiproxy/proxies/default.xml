@@ -1,0 +1,11 @@
+<ProxyEndpoint name="default">
+    <Flows/>
+    <PreFlow/>
+    <HTTPProxyConnection>
+        <BasePath>/async-slowapp</BasePath>
+        <VirtualHost>secure</VirtualHost>
+    </HTTPProxyConnection>
+    <RouteRule name="hosted">
+        <TargetEndpoint>hosted</TargetEndpoint>
+    </RouteRule>
+</ProxyEndpoint>
