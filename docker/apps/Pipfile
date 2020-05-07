@@ -16,7 +16,6 @@ gunicorn = ">=19.9.0"
 pipdeptree = "*"
 
 [dev-packages]
-apigee-tool = "*"
 ipython = "*"
 mypy = "*"
 pylint = "==2.3.1"

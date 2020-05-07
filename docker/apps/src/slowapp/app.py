@@ -65,7 +65,11 @@ class SlowApp(Application):  # pylint: disable=no-self-use
                 get('/_ping', self.ping_handler),
                 get('/slow', self.slow_handler),
                 delete('/poll', self.delete_handler),
-                get('/poll', self.poll_handler)
+                get('/poll', self.poll_handler),
+                get('/sub/_ping', self.ping_handler),
+                get('/sub/slow', self.slow_handler),
+                delete('/sub/poll', self.delete_handler),
+                get('/sub/poll', self.poll_handler)
             ]
         )
 

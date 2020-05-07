@@ -12,12 +12,12 @@ build:
 	cp -r ./src ./dist/apiproxy/resources/hosted
 
 deploy: build
-	cd ./dist && apigeetool deployproxy -V -o nhsd-nonprod -e internal-dev -n sync-wrap -t $$(get_token)
+	cd ./dist && apigeetool deployproxy -V -o nhsd-nonprod -e internal-dev -n async-slowapp -t $$(get_token)
 
 undeploy:
-	apigeetool undeploy -V -o nhsd-nonprod -e internal-dev -n sync-wrap -t $(get_token)
+	apigeetool undeploy -V -o nhsd-nonprod -e internal-dev -n async-slowapp -t $(get_token)
 
 delete:
-	apigeetool delete -V -o nhsd-nonprod -n sync-wrap -t $(get_token)
+	apigeetool delete -V -o nhsd-nonprod -n async-slowapp -t $(get_token)
 install:
 	npm install --dev

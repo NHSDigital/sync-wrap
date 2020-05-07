@@ -17,7 +17,7 @@ describe("express with async-slowapp", function () {
     before(function () {
         env = process.env;
         let app = require("./server");
-        app.setup({ LOG_LEVEL: "debug"});
+        app.setup({ LOG_LEVEL: "debug", HOST:"https://fakehost.com"});
         server = app.server;
     });
 
@@ -64,7 +64,7 @@ describe("express with async-slowapp", function () {
                 // this checks cookies are preserved through the poll cycle
                 assert.equal(poll_count, 0);
             })
-            .expect(200, done)
+            .expect(202, done)
 
     });
 
@@ -82,7 +82,7 @@ describe("express with async-slowapp", function () {
                 let poll_count = parseInt(cookies["poll-count"].split(";")[0].split("=")[1]);
                 assert.equal(poll_count, 0);
             })
-            .expect(200)
+            .expect(202)
             .end(async ()=>{
                 await sleep(500);
                 let url = new URL(content_location);
@@ -97,10 +97,103 @@ describe("express with async-slowapp", function () {
                     let poll_count = parseInt(cookies["poll-count"].split(";")[0].split("=")[1]);
                     assert.equal(poll_count, 1);
                 })
-                .expect(418, done);
-
+                .expect(418, done)
             });
+    });
 
+
+});
+
+
+
+describe("express with async-slowapp with /sub", function () {
+    var server;
+    var env;
+    before(function () {
+        env = process.env;
+        let app = require("./server");
+        app.setup({ LOG_LEVEL: "debug", HOST:"https://fakehost.com/sub"});
+        server = app.server;
+    });
+
+    beforeEach(function () {
+
+    });
+    afterEach(function () {
+
+    });
+    after(function () {
+        process.env = env;
+        server.close();
+    });
+
+    it("responds to /sub/_ping", (done) => {
+        request(server)
+            .get("/sub/_ping")
+            .expect(200, {ping: "pong"})
+            .expect("Content-Type", /json/, done);
+    });
+
+    it("responds not found to get /sub/poll poll for missing id", (done) => {
+        request(server)
+            .get("/sub/poll?id=madeup")
+            .expect(404, done);
+    });
+
+    it("responds not found to delete /sub/poll poll for missing id", (done) => {
+        request(server)
+            .delete("/sub/poll?id=madeup")
+            .expect(404, done);
+    });
+
+    it("responds to /sub/slow with a new content-location", (done) => {
+        request(server)
+            .get("/sub/slow")
+            .expect("Content-Type", /json/)
+            .expect(res => {
+                let headers = res.res.rawHeaders.asMultiValue();
+                assert.isTrue(headers.has('content-location'));
+                let cookies = headers.cookies("set-cookie");
+                assert.isDefined(cookies["poll-count"]);
+                let poll_count = parseInt(cookies["poll-count"].split(";")[0].split("=")[1]);
+                // this checks cookies are preserved through the poll cycle
+                assert.equal(poll_count, 0);
+            })
+            .expect(202, done)
+
+    });
+
+    it("responds to /sub/slow with a content-location and poll count increments", (done) => {
+        let content_location;
+        request(server)
+            .get("/sub/slow?complete_in=0.01&final_status=418")
+            .expect("Content-Type", /json/)
+            .expect(res => {
+                let headers = res.res.rawHeaders.asMultiValue();
+                assert.isTrue(headers.has('content-location'));
+                content_location = headers['content-location'];
+                let cookies = headers.cookies("set-cookie");
+                assert.isDefined(cookies["poll-count"]);
+                let poll_count = parseInt(cookies["poll-count"].split(";")[0].split("=")[1]);
+                assert.equal(poll_count, 0);
+            })
+            .expect(202)
+            .end(async ()=>{
+                await sleep(500);
+                let url = new URL(content_location);
+                request(server)
+                    .get(url.pathname + url.search)
+                    .set("Cookie", "poll-count=0")
+                    .expect(res => {
+                        let headers = res.res.rawHeaders.asMultiValue();
+                        assert.isFalse(headers.has('content-location'));
+                        let cookies = headers.cookies("set-cookie");
+                        assert.isDefined(cookies["poll-count"]);
+                        let poll_count = parseInt(cookies["poll-count"].split(";")[0].split("=")[1]);
+                        assert.equal(poll_count, 1);
+                    })
+                    .expect(418, done)
+            });
     });
 
 

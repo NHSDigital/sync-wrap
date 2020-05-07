@@ -3,3 +3,9 @@
  env:
   - name: NODE_ENV
     value: production
+  - name: SECURE
+    value: true
+  - name: LOG_LEVEL
+    value: debug
+  - name: HOST
+    value: https://nhsd-nonprod-internal-dev.apigee.net/async-slowapp

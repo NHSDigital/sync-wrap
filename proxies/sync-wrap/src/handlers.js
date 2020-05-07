@@ -212,8 +212,10 @@ async function ping(req, res) { res.json({ping: "pong"}); }
 
 
 async function proxy(proxy_req, proxy_resp) {
+    
+    let locals = proxy_req.app.locals;
 
-    let conn = proxy_req.app.locals.conn;
+    let conn = locals.conn;
 
     let query =  Object.assign({}, proxy_req.query);
 
@@ -238,7 +240,7 @@ async function proxy(proxy_req, proxy_resp) {
         delete query.syncWait;
     }
 
-    let path = query.isEmpty() ? proxy_req.params[0] : `${proxy_req.params[0]}?${querystring.stringify(query)}`;
+    let path = query.isEmpty() ? `${locals.base_path}${proxy_req.params[0]}` : `${locals.base_path}${proxy_req.params[0]}?${querystring.stringify(query)}`;
 
     let headers = proxy_req.rawHeaders.asMultiValue();
 
@@ -259,7 +261,7 @@ async function proxy(proxy_req, proxy_resp) {
             respond_before: new Date(new Date().getTime() + Math.floor(syncWait*1000)),
             received_cookies: {}
         },
-        proxy_req.app.locals.default_options
+        locals.default_options
     );
 
     const sleep = (delay) => {
@@ -283,7 +285,7 @@ async function proxy(proxy_req, proxy_resp) {
 
         proxy_resp.status(status);
         if(headers !== undefined){
-            debotli = proxy_req.app.locals.unbotli && headers["content-encoding"] === "br";
+            debotli = locals.unbotli && headers["content-encoding"] === "br";
             if (debotli) {
                 headers["content-encoding"] = "gzip";
                 headers.remove("content-length");
@@ -320,9 +322,8 @@ async function proxy(proxy_req, proxy_resp) {
             });
 
             request.on("response", response => {
-                lazy_debug("upstream","response", opts.method, opts.path, ()=>response.rawHeaders.printableHeaders());
+                lazy_debug("upstream", "response", response.statusCode, opts.method, opts.path, ()=>response.rawHeaders.printableHeaders());
 
-                // log.debug(`${opts.method} ${opts.path}\n${response.rawHeaders.printableHeaders()}`);
                 resolve({
                     options: opts,
                     response: response,

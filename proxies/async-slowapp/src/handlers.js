@@ -214,10 +214,22 @@ function lazy_debug(...msg_or_func) {
     log.debug(...msgs, "\n");
 }
 
+function respond(req, res, status, headers=undefined) {
+
+    res.status(status);
+    if (headers!==undefined) {
+        lazy_debug("response", status, req.method, req.url, () => headers.printableHeaders());
+        res.set(headers);
+    }
+    else {
+        lazy_debug("response", status, req.method, req.url);
+    }
+    res.end()
+}
+
 async function ping(req, res) { res.json({ping: "pong"}); }
 
-async function get_slow(req, res) {
-
+async function slow(req, res) {
 
     log.info("slow", req.url, "\n");
     lazy_debug("slow", req.method, req.url, ()=> req.rawHeaders.printableHeaders());
@@ -240,7 +252,7 @@ async function get_slow(req, res) {
 
     locals.tracked[poll_id] = {finish_at: finish_at, final_status: parseInt(final_status)};
 
-    let location = `${locals.secure?'https':'http'}://${req.headers.host}/poll?id=${poll_id}`;
+    let location = `${locals.host}/poll?id=${poll_id}`;
 
     let headers = new MultiValueHeaders([
         "Content-Type", "application/json",
@@ -248,30 +260,33 @@ async function get_slow(req, res) {
     ]);
     headers.withNewCookies({"poll-count": "poll-count=0"});
 
-    res.status(200);
-    res.set(headers);
-    res.end()
-
+    respond(req, res, 202, headers);
 
 }
 
 async function delete_poll(req, res) {
+
+    log.info("delete_poll", req.url, "\n");
+    lazy_debug("delete_poll", req.method, req.url, ()=> req.rawHeaders.printableHeaders());
+
     let poll_id = req.query.id;
     let locals = req.app.locals;
 
     if (!(poll_id in locals.tracked)) {
-        res.status(404);
-        res.end();
+        respond(req, res, 404);
         return;
     }
 
     delete locals.tracked[poll_id];
-    res.status(200);
-    res.end()
+
+    respond(req, res, 200);
 }
 
 
 async function poll(req, res) {
+
+    log.info("poll", req.url, "\n");
+    lazy_debug("poll", req.method, req.url, ()=> req.rawHeaders.printableHeaders());
 
     let poll_id = req.query.id;
     let headers = req.rawHeaders.asMultiValue();
@@ -285,18 +300,15 @@ async function poll(req, res) {
     }
 
     if (!(poll_id in locals.tracked)) {
-        res.status(404);
-        res.end();
+        respond(req, res, 404);
         return;
     }
-
 
     let tracking = locals.tracked[poll_id];
 
     if (new Date() < tracking.finish_at) {
-        res.status(202);
-        res.set({'Content-Location': `${locals.secure?'https':'http'}://${req.headers.host}/poll?id=${poll_id}`});
-        res.end();
+        respond(req, res, 202, new MultiValueHeaders(['Content-Location', `${locals.host}/poll?id=${poll_id}`]));
+        return;
     }
 
     let resp_headers = new MultiValueHeaders();
@@ -307,14 +319,12 @@ async function poll(req, res) {
 
     delete locals.tracked[poll_id];
 
-    res.status(tracking.final_status);
-    res.set(resp_headers);
-    res.end();
+    respond(req, res, tracking.final_status, resp_headers);
 }
 
 module.exports = {
     ping: ping,
-    slow: get_slow,
+    slow: slow,
     delete_poll: delete_poll,
     poll: poll
 };
