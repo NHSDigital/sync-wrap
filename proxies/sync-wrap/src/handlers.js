@@ -200,18 +200,62 @@ class MultiValueHeaders {
 
 }
 
-function lazy_debug(...msg_or_func) {
+const lazy_debug = (...msg_or_func) => {
     if (log.getLevel()>1) {
         return
     }
     let msgs = msg_or_func.map(x=> {return typeof x === "function"? x() : x });
     log.debug(...msgs, "\n");
-}
+};
+
+const sleep = (delay) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, delay)
+    });
+};
 
 async function ping(req, res) { res.json({ping: "pong"}); }
 
 
 async function proxy(proxy_req, proxy_resp) {
+
+
+    async function send_response(status, headers = undefined, response_stream = undefined) {
+
+        if (log.getLevel()<2) {
+            if (headers === undefined) {
+                lazy_debug("client","response", status, options.method, options.path);
+            }
+            else {
+                lazy_debug("client","response", status, options.method, options.path, ()=>headers.printableHeaders());
+            }
+        }
+
+        let debotli = false;
+
+        proxy_resp.status(status);
+        if(headers !== undefined){
+            // apigee doesn't support botli content encoding for some reason, it sets the encoding to gzip
+            debotli = locals.unbotli && headers["content-encoding"] === "br";
+            if (debotli) {
+                headers["content-encoding"] = "gzip";
+                headers.remove("content-length");
+            }
+            proxy_resp.set(headers);
+        }
+
+        if (response_stream === undefined) {
+            proxy_resp.end()
+        }
+        else {
+            if (debotli) {
+                await pipeline(response_stream, zlib.createBrotliDecompress(), zlib.createGzip(), proxy_resp)
+            }
+            else {
+                await pipeline(response_stream, proxy_resp);
+            }
+        }
+    }
     
     let locals = proxy_req.app.locals;
 
@@ -264,48 +308,8 @@ async function proxy(proxy_req, proxy_resp) {
         locals.default_options
     );
 
-    const sleep = (delay) => {
-        return new Promise(resolve => {
-            setTimeout(resolve, delay)
-        });
-    };
 
-    async function send_response(status, headers = undefined, response_stream = undefined) {
 
-        if (log.getLevel()<2) {
-            if (headers === undefined) {
-                lazy_debug("client","response", status, options.method, options.path);
-            }
-            else {
-                lazy_debug("client","response", status, options.method, options.path, ()=>headers.printableHeaders());
-            }
-        }
-
-        let debotli = false;
-
-        proxy_resp.status(status);
-        if(headers !== undefined){
-            // apigee doesn't support botli content encoding for some reason, it sets the encoding to gzip
-            debotli = locals.unbotli && headers["content-encoding"] === "br";
-            if (debotli) {
-                headers["content-encoding"] = "gzip";
-                headers.remove("content-length");
-            }
-            proxy_resp.set(headers);
-        }
-
-        if (response_stream === undefined) {
-            proxy_resp.end()
-        }
-        else {
-            if (debotli) {
-                await pipeline(response_stream, zlib.createBrotliDecompress(), zlib.createGzip(), proxy_resp)
-            }
-            else {
-                await pipeline(response_stream, proxy_resp);
-            }
-        }
-    }
 
     async function make_request(opts, request_stream = undefined) {
         // Return new promise

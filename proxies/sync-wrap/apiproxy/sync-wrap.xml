@@ -4,5 +4,6 @@
     <Policies>
         <Policy>get-splunk-secrets</Policy>
         <Policy>splunk-hec-callout</Policy>
+        <Policy>add-js-header</Policy>
     </Policies>
 </APIProxy>

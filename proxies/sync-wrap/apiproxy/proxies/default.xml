@@ -5,6 +5,9 @@
             <Step>
                 <Name>get-splunk-secrets</Name>
             </Step>
+            <Step>
+                <Name>add-js-header</Name>
+            </Step>
         </Request>
         <Response/>
     </PreFlow>
@@ -17,10 +20,15 @@
         </Response>
     </PostClientFlow>
     <HTTPProxyConnection>
-        <BasePath>/sync</BasePath>
+        <BasePath>/sync-wrap</BasePath>
         <VirtualHost>secure</VirtualHost>
     </HTTPProxyConnection>
-    <RouteRule name="hosted">
-        <TargetEndpoint>hosted</TargetEndpoint>
+    <RouteRule name="sync-wrap">
+        <Condition>request.queryparam.sync = "true"</Condition>
+        <TargetEndpoint>sync-wrap</TargetEndpoint>
+    </RouteRule>
+    <RouteRule name="upstream">
+        <Condition>request.queryparam.sync != "true"</Condition>
+        <TargetEndpoint>upstream</TargetEndpoint>
     </RouteRule>
 </ProxyEndpoint>

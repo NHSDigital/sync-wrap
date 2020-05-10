@@ -1,0 +1,4 @@
+<Javascript async="false" continueOnError="false" enabled="true" timeLimit="200" name="add-js-header">
+    <DisplayName>add-js-header</DisplayName>
+    <ResourceURL>jsc://add-js-header.js</ResourceURL>
+</Javascript>

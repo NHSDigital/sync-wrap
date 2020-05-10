@@ -1,4 +1,4 @@
-<TargetEndpoint name="hosted">
+<TargetEndpoint name="sync-wrap">
     <Description/>
     <FaultRules/>
     <Flows/>
