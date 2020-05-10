@@ -26,8 +26,6 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
-
-
   slowapp:
     container_name: slowapp
     build:

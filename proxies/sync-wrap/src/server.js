@@ -13,6 +13,8 @@ function setup(options) {
     log.info("configured with: " + options.UPSTREAM);
     app.locals.allow_insecure = (options.ALLOW_INSECURE || "false") === "true";
     app.locals.unbotli = (options.UNBOTLI || "false") === "true";
+    app.locals.max_sleep = parseFloat(options.MAX_SLEEP || 5);
+    app.locals.default_syncwait = parseFloat(options.DEFAULT_SYNCWAIT || 5);
     let keepalive = (options.KEEPALIVE || "true") === "true";
 
     let https = app.locals.upstream.protocol === "https:";

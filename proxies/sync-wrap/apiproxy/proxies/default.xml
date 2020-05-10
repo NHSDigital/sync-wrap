@@ -1,6 +1,21 @@
 <ProxyEndpoint name="default">
     <Flows/>
-    <PreFlow/>
+    <PreFlow name="PreFlow">
+        <Request>
+            <Step>
+                <Name>get-splunk-secrets</Name>
+            </Step>
+        </Request>
+        <Response/>
+    </PreFlow>
+    <PostClientFlow>
+        <Response>
+            <Step>
+                <FaultRules/>
+                <Name>splunk-hec-callout</Name>
+            </Step>
+        </Response>
+    </PostClientFlow>
     <HTTPProxyConnection>
         <BasePath>/sync</BasePath>
         <VirtualHost>secure</VirtualHost>

@@ -219,7 +219,7 @@ async function proxy(proxy_req, proxy_resp) {
 
     let query =  Object.assign({}, proxy_req.query);
 
-    let syncWait = 5;  // default
+    let syncWait = locals.default_syncwait;
 
     if ("syncWait" in query) {
         if(isNaN(query.syncWait)){
@@ -285,6 +285,7 @@ async function proxy(proxy_req, proxy_resp) {
 
         proxy_resp.status(status);
         if(headers !== undefined){
+            // apigee doesn't support botli content encoding for some reason, it sets the encoding to gzip
             debotli = locals.unbotli && headers["content-encoding"] === "br";
             if (debotli) {
                 headers["content-encoding"] = "gzip";
@@ -348,26 +349,21 @@ async function proxy(proxy_req, proxy_resp) {
 
     async function poll_async(options) {
 
-        let timeout = options.respond_before.getTime() - (new Date()).getTime();
+        let remaining_timeout = options.respond_before.getTime() - (new Date()).getTime();
 
-        if (timeout < 10) {
+        if (remaining_timeout < 10) {
             let response = options.last_response;
             await send_response(response.statusCode, options.last_headers, response);
             return
         }
 
-        await sleep(options.sleep);
+        await sleep(Math.min(options.sleep, remaining_timeout));
 
-        timeout = options.respond_before.getTime() - (new Date()).getTime();
-        options.timeout = timeout;
+        remaining_timeout = options.respond_before.getTime() - (new Date()).getTime();
+        options.timeout = Math.max(remaining_timeout, 50);
 
-        if (timeout < 10) {
-            let response = options.last_response;
-            await send_response(response.statusCode, options.last_headers, response);
-            return
-        }
 
-        options.sleep = Math.min(2*options.sleep, 5000);
+        options.sleep = Math.min(2*options.sleep, locals.max_sleep);
 
         // todo: should look at using a cookie jar to check expired etc ??
         options.headers.withNewCookies(options.received_cookies, "cookie");
