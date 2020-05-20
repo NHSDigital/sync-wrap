@@ -197,4 +197,33 @@ describe("express with async-slowapp with /sub", function () {
     });
 
 
+    it("responds to /sub/poll continues with correct location", (done) => {
+        let content_location;
+        request(server)
+            .get("/sub/slow?complete_in=0.3&final_status=418")
+            .expect("Content-Type", /json/)
+            .expect(res => {
+                let headers = res.res.rawHeaders.asMultiValue();
+                assert.isTrue(headers.has('content-location'));
+                content_location = headers['content-location'];
+                let cookies = headers.cookies("set-cookie");
+                assert.isDefined(cookies["poll-count"]);
+                let poll_count = parseInt(cookies["poll-count"].split(";")[0].split("=")[1]);
+                assert.equal(poll_count, 0);
+            })
+            .expect(202)
+            .end(async ()=>{
+                let url = new URL(content_location);
+                request(server)
+                    .get(url.pathname + url.search)
+                    .set("Cookie", "poll-count=0")
+                    .expect(res => {
+                        let headers = res.res.rawHeaders.asMultiValue();
+                        assert.isTrue(headers.has('content-location'));
+                        assert.match(headers['content-location'], /^https:\/\/.*\/sub\/poll\?id=.*/)
+                    })
+                    .expect(418, done)
+            });
+    });
+
 });

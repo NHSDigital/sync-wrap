@@ -31,6 +31,16 @@ async def test_start_and_delete(aiohttp_client, slowapp):
     assert resp.status == 200
 
 
+async def test_patch_start_and_delete(aiohttp_client, slowapp):
+
+    client = await aiohttp_client(slowapp)
+    resp = await client.patch(f'/slow')
+    assert resp.status == 202
+    poll_url = URL(resp.headers['Content-Location'])
+    resp = await client.delete(poll_url.raw_path_qs)
+    assert resp.status == 200
+
+
 async def test_start_and_finish_with_status(aiohttp_client, slowapp):
 
     client = await aiohttp_client(slowapp)

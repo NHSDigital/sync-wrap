@@ -11,7 +11,7 @@ from aiohttp import web
 from aiohttp.abc import Request
 from aiohttp.web import Application, get
 from aiohttp.web_exceptions import HTTPError, HTTPNotFound
-from aiohttp.web_routedef import delete
+from aiohttp.web_routedef import delete, patch
 from dateutil.relativedelta import relativedelta
 
 from shared.version_data import FULL_VERSION_STRING
@@ -64,6 +64,7 @@ class SlowApp(Application):  # pylint: disable=no-self-use
             [
                 get('/_ping', self.ping_handler),
                 get('/slow', self.slow_handler),
+                patch('/slow', self.slow_handler),
                 delete('/poll', self.delete_handler),
                 get('/poll', self.poll_handler),
                 get('/sub/_ping', self.ping_handler),

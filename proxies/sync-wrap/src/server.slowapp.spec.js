@@ -25,16 +25,16 @@ describe("express with slowapp no insecure", function () {
         server.close();
     });
 
-    it("responds to /self-ping", (done) => {
+    it("responds to /_status", (done) => {
         request(server)
-            .get("/self-ping")
+            .get("/_status")
             .expect(200, {ping: "pong"})
             .expect("Content-Type", /json/, done);
     });
 
-    it("responds to /ping upstream", (done) => {
+    it("responds to /_ping upstream", (done) => {
         request(server)
-            .get("/ping")
+            .get("/_ping")
             .expect(502, done);
     });
 });
@@ -61,9 +61,9 @@ describe("express with slowap", function () {
         server.close();
     });
 
-    it("responds to /self-ping", (done) => {
+    it("responds to /_status", (done) => {
         request(server)
-            .get("/self-ping")
+            .get("/_status")
             .expect(200, {ping: "pong"})
             .expect("Content-Type", /json/, done);
     });
@@ -128,18 +128,13 @@ describe("express with slowap with sub path", function () {
         server.close();
     });
 
-    it("responds to /self-ping", (done) => {
+    it("responds to /_status", (done) => {
         request(server)
-            .get("/self-ping")
+            .get("/_status")
             .expect(200, {ping: "pong"})
             .expect("Content-Type", /json/, done);
     });
 
-    it("responds to /_ping upstream", (done) => {
-        request(server)
-            .get("/_ping")
-            .expect(200, done);
-    });
 
     it("it times out if syncwait shorter than initial response", (done) => {
         request(server)
@@ -169,5 +164,12 @@ describe("express with slowap with sub path", function () {
             .expect("Content-Location", /^http:\/\/localhost:9003\/sub\/poll\?id=.*/)
             .expect(202, done);
     }).timeout(10000);
+
+    // it("slowapp patch request", (done) => {
+    //     request(server)
+    //         .patch("/slow?final_status=500&complete_in=5&syncWait=1")
+    //         .expect("Content-Location", /^http:\/\/localhost:9003\/sub\/poll\?id=.*/)
+    //         .expect(202, done);
+    // }).timeout(10000);
 
 });

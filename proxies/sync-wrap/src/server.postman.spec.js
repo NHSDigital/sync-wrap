@@ -53,9 +53,9 @@ describe("express with postman-echo", function () {
         server.close();
     });
 
-    it("responds to /self-ping", (done) => {
+    it("responds to /_status", (done) => {
         request(server)
-            .get("/self-ping")
+            .get("/_status")
             .expect(200, {ping: "pong"})
             .expect("Content-Type", /json/, done);
     });
@@ -149,21 +149,21 @@ describe("express with postman-echo", function () {
         request(server)
             .get("/delay/3?syncWait=eeek")
             .set("Accept", "application/json")
-            .expect(400, {err: "syncWait should be a number between 0.25 and 900"}, done);
+            .expect(400, {err: "syncWait should be a number between 0.25 and 59"}, done);
     });
 
     it("it validates syncWait is > lower bound", (done) => {
         request(server)
             .get("/delay/3?syncWait=0.0001")
             .set("Accept", "application/json")
-            .expect(400, {err: "syncWait should be a number between 0.25 and 900"}, done);
+            .expect(400, {err: "syncWait should be a number between 0.25 and 59"}, done);
     });
 
     it("it validates syncWait is < upper bound", (done) => {
         request(server)
-            .get("/delay/3?syncWait=901")
+            .get("/delay/3?syncWait=60")
             .set("Accept", "application/json")
-            .expect(400, {err: "syncWait should be a number between 0.25 and 900"}, done);
+            .expect(400, {err: "syncWait should be a number between 0.25 and 59"}, done);
     });
 
     it("it times out if syncwait shorter than initial response", (done) => {

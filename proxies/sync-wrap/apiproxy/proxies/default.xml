@@ -15,7 +15,7 @@
         <Response>
             <Step>
                 <FaultRules/>
-                <Name>splunk-hec-callout</Name>
+                <Name>splunk-message-logging</Name>
             </Step>
         </Response>
     </PostClientFlow>
@@ -24,11 +24,6 @@
         <VirtualHost>secure</VirtualHost>
     </HTTPProxyConnection>
     <RouteRule name="sync-wrap">
-        <Condition>request.queryparam.sync = "true"</Condition>
         <TargetEndpoint>sync-wrap</TargetEndpoint>
-    </RouteRule>
-    <RouteRule name="upstream">
-        <Condition>request.queryparam.sync != "true"</Condition>
-        <TargetEndpoint>upstream</TargetEndpoint>
     </RouteRule>
 </ProxyEndpoint>

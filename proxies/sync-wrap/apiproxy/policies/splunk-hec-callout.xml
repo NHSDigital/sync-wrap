@@ -1,4 +1,4 @@
-<ServiceCallout name="splunk-hec-callout">
+<ServiceCallout name="splunk-hec-callout" async="true" continueOnError="false" enabled="true">
     <DisplayName>splunk hec callout</DisplayName>
     <Properties/>
     <Request clearPayload="true" variable="myRequest">
@@ -84,6 +84,7 @@
         </Set>
     </Request>
     <Response>calloutResponse</Response>
+    <Timeout>30000</Timeout>
     <HTTPTargetConnection>
         <Properties/>
         <URL>https://{private.splunk_host}</URL>

@@ -216,6 +216,8 @@ const sleep = (delay) => {
 
 async function ping(req, res) { res.json({ping: "pong"}); }
 
+async function env(req, res) { res.json({env: process.env}); }
+
 
 async function proxy(proxy_req, proxy_resp) {
 
@@ -269,15 +271,15 @@ async function proxy(proxy_req, proxy_resp) {
         if(isNaN(query.syncWait)){
             proxy_resp.status(400);
             proxy_resp.json({
-                err: "syncWait should be a number between 0.25 and 900"
+                err: "syncWait should be a number between 0.25 and 59"
             });
             return
         }
         syncWait = parseFloat(query.syncWait);
-        if (syncWait < 0.25 || syncWait > 900) {
+        if (syncWait < 0.25 || syncWait > 59) {
             proxy_resp.status(400);
             proxy_resp.json({
-                err: "syncWait should be a number between 0.25 and 900"
+                err: "syncWait should be a number between 0.25 and 59"
             });
             return
         }
@@ -292,8 +294,9 @@ async function proxy(proxy_req, proxy_resp) {
     headers.set("X-Forwarded-For", proxy_req.connection.remoteAddress);
 
     let respond_async = headers.prefer === "respond-async";
+    headers.set("prefer", "respond-async");
 
-    log.info("request", proxy_req.method, path, "\n");
+    log.info("request", proxy_req.method, path, `syncWait=${syncWait}`, "\n");
     lazy_debug("client","request", proxy_req.method, path, ()=> proxy_req.rawHeaders.printableHeaders());
 
     let options = Object.assign(
@@ -431,5 +434,6 @@ async function proxy(proxy_req, proxy_resp) {
 
 module.exports = {
     ping: ping,
-    proxy: proxy
+    proxy: proxy,
+    env: env
 };
