@@ -65,4 +65,4 @@ jobs:
         displayName: build artifact
 
       - publish: dist/
-        artifact: sync-wrap-$(SPEC_VERSION)+$(Build.BuildNumber)
+        artifact: sync-wrap-$(Build.BuildNumber)
