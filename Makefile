@@ -35,6 +35,9 @@ install:
 clean-build:
 	rm -rf ./build || true
 
+clean-dist:
+	rm -rf ./dist || true
+
 build: clean-build
 	@for dir in $(modules); do \
 		make --no-print-directory -C proxies/$${dir} build & \
@@ -49,8 +52,8 @@ deploy:
 	done; \
 	wait
 
-ls:
-	@for dir in $(modules); do \
-		make --no-print-directory -C proxies/$${dir} ls & \
-	done; \
-	wait
+dist: clean-dist build
+	mkdir -p dist
+	cp -R build/. dist/
+	cp -R terraform dist
+#	cp -R tests dist

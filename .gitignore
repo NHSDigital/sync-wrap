@@ -18,7 +18,7 @@ node_modules/
 
 # Packaging
 build/
-
+dist/
 
 # terraform
 **/.terraform/*
