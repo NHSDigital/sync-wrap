@@ -53,7 +53,7 @@ deploy:
 	wait
 
 dist: clean-dist build
-	mkdir -p dist
-	cp -R build/. dist/
+	mkdir -p dist/proxies
+	cp -R build/. dist/proxies
 	cp -R terraform dist
 #	cp -R tests dist
