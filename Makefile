@@ -52,6 +52,18 @@ deploy:
 	done; \
 	wait
 
+undeploy:
+	@for dir in $(modules); do \
+		make --no-print-directory -C proxies/$${dir} undeploy & \
+	done; \
+	wait
+
+delete:
+	@for dir in $(modules); do \
+		make --no-print-directory -C proxies/$${dir} delete & \
+	done; \
+	wait
+
 dist: clean-dist build
 	mkdir -p dist/proxies
 	cp -R build/. dist/proxies

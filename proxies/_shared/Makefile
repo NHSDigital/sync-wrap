@@ -14,10 +14,10 @@ deploy: build
 	cd ../../build/$(dirname) && apigeetool deployproxy -V -o nhsd-nonprod -e internal-dev -n $(dirname) -t $$(get_token)
 
 undeploy:
-	apigeetool undeploy -V -o nhsd-nonprod -e internal-dev -n $(dirname) -t $(get_token)
+	apigeetool undeploy -V -o nhsd-nonprod -e internal-dev -n $(dirname) -t $$(get_token)
 
 delete:
-	apigeetool delete -V -o nhsd-nonprod -n $(dirname) -t $(get_token)
+	apigeetool delete -V -o nhsd-nonprod -n $(dirname) -t $$(get_token)
 
 clean:
 	rm -rf ./node_modules

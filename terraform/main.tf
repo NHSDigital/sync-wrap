@@ -49,8 +49,8 @@ data "archive_file" "sync-wrap" {
 
 resource "apigee_api_proxy" "sync-wrap" {
   name = "sync-wrap-${var.apigee_environment}${var.namespace}"
-  bundle = data.archive_file.async-slowapp.output_path
-  bundle_sha = data.archive_file.async-slowapp.output_sha
+  bundle = data.archive_file.sync-wrap.output_path
+  bundle_sha = data.archive_file.sync-wrap.output_sha
 }
 
 resource "apigee_api_proxy_deployment" "sync-wrap" {
