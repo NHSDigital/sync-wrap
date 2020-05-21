@@ -9,9 +9,9 @@ describe("express with fake domain", function () {
     var env;
     before(function () {
         env = process.env;
-        let app = require("./server");
+        let app = require("./app");
         app.setup({UPSTREAM: "https://localhost:1234", ALLOW_INSECURE: "true", LOG_LEVEL: "debug"});
-        server = app.server;
+        server = app.start();
     });
 
     beforeEach(function () {
@@ -37,9 +37,9 @@ describe("express with postman-echo", function () {
     var env;
     before(function () {
         env = process.env;
-        let app = require("./server");
+        let app = require("./app");
         app.setup({UPSTREAM: "https://postman-echo.com", LOG_LEVEL: "debug"});
-        server = app.server;
+        server = app.start();
     });
     
     beforeEach(function () {
@@ -90,6 +90,7 @@ describe("express with postman-echo", function () {
             assert.equal(headers.accept, "application/json");
             assert.equal(headers.myheader, "1234");
             assert.equal(headers["user-agent"], "mattagent");
+            assert.equal(headers["x-sync-wrapped"], "true");
             // todo: postman echo concats these so should check elsewhere
             assert.equal(headers.foo, "bar1, bar2");
         })

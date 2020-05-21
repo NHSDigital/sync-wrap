@@ -1,44 +1,23 @@
 
-
 # IDE and various other developer tools
-.env
-**/.env
-.venv
-**/.venv
 .vscode
 .idea
 .ipynb_checkpoints
 *.swp
-tags
-Pipfile.lock
+
 
 # Misc
 !.gitkeep
 *.orig
-.vault_password
-docker-compose.override.yml
 *.squashfs
 *.retry
-node_modules/
 
+# node
+node_modules/
 
 
 # Packaging
 build/
-dist/
-.eggs/
-
-# Python
-__pycache__
-*.pyc
-site-packages/
-site-packages.zip
-
-
-# Test Suite
-.pytest_cache
-unit_test_report.xml
-.~lock*
 
 
 # terraform
@@ -58,26 +37,12 @@ unit_test_report.xml
 *.csr.cfg
 *id_rsa*
 
-# packer
-packer_cache/
-*.box
 
 # Big binaries
 *.bz2
 *.gz
-!testdata/**/*.gz
 *.jar
 *.tar.gz
 *.tgz
 *.zip
-!testdata/**/*.zip
-
-#Ansible
-*.retry
-
-# mypy
-.mypy_cache
-
-# pyenv
-.python-version
 

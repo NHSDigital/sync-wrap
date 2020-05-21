@@ -10,6 +10,7 @@ const zlib = require("zlib");
 
 Object.defineProperty(Object.prototype, "isEmpty", {
         enumerable: false,
+        configurable: true,
         value: function() {
             for (const prop in this) if (this.hasOwnProperty(prop)) return false;
             return true;
@@ -19,6 +20,7 @@ Object.defineProperty(Object.prototype, "isEmpty", {
 
 Object.defineProperty(Array.prototype, "isEmpty", {
         enumerable: false,
+        configurable: true,
         value: function () {
             return this.length === 0;
         }
@@ -27,6 +29,7 @@ Object.defineProperty(Array.prototype, "isEmpty", {
 
 Object.defineProperty(Object.prototype, "values", {
         enumerable: false,
+        configurable: true,
         value: function() {
             let self = this;
             return Object.keys(self).map(key => {return self[key]});
@@ -37,6 +40,7 @@ Object.defineProperty(Object.prototype, "values", {
 
 Object.defineProperty(Array.prototype, "asMultiValue", {
         enumerable: false,
+        configurable: true,
         value: function() {
             return new MultiValueHeaders(this)
         }
@@ -45,6 +49,7 @@ Object.defineProperty(Array.prototype, "asMultiValue", {
 
 Object.defineProperty(Array.prototype, "printableHeaders", {
         enumerable: false,
+        configurable: true,
         value: function() {
             let lines = [];
             this.forEach((val, index, arr) => {
@@ -59,6 +64,7 @@ Object.defineProperty(Array.prototype, "printableHeaders", {
 
 Object.defineProperty(Array.prototype, "parseCookies", {
         enumerable: false,
+        configurable: true,
         value: function() {
             let cookies = {};
             this.forEach((cookie) => {
@@ -292,9 +298,10 @@ async function proxy(proxy_req, proxy_resp) {
 
     delete headers.host;
     headers.set("X-Forwarded-For", proxy_req.connection.remoteAddress);
+    headers.set("x-sync-wrapped", "true");
 
     let respond_async = headers.prefer === "respond-async";
-    headers.set("prefer", "respond-async");
+
 
     log.info("request", proxy_req.method, path, `syncWait=${syncWait}`, "\n");
     lazy_debug("client","request", proxy_req.method, path, ()=> proxy_req.rawHeaders.printableHeaders());

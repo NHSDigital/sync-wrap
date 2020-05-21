@@ -9,9 +9,9 @@ describe("express with google upstream and botli decompress", function () {
     var env;
     before(function () {
         env = process.env;
-        let app = require("./server");
+        let app = require("./app");
         app.setup({UPSTREAM: "https://www.google.co.uk", LOG_LEVEL: "debug", UNBOTLI: "true"});
-        server = app.server;
+        server = app.start();
     });
 
     beforeEach(function () {
@@ -74,9 +74,10 @@ describe("express with google upstream without botli decompress", function () {
     var env;
     before(function () {
         env = process.env;
-        let app = require("./server");
+
+        let app = require("./app");
         app.setup({UPSTREAM: "https://www.google.co.uk", LOG_LEVEL: "debug", UNBOTLI: "false"});
-        server = app.server;
+        server = app.start();
     });
 
     beforeEach(function () {

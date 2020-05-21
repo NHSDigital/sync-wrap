@@ -6,7 +6,7 @@ const log = require("loglevel");
 
 
 function setup(options) {
-
+    options = options || {};
     app.locals.upstream = new URL(options.UPSTREAM || "http://localhost");
     app.locals.base_path = app.locals.upstream.pathname === "/" ? "" : app.locals.upstream.pathname;
     log.setLevel(options.LOG_LEVEL || "info");
@@ -44,7 +44,13 @@ function setup(options) {
     app.locals.conn = https ? require("https") : require("http");
 }
 
-setup(process.env);
+function start(options) {
+    options = options || {};
+    let server = app.listen(options.PORT || 9000, () => {
+        log.info("server listening on port %d", server.address().port);
+    });
+    return server;
+}
 
 const handlers = require("./handlers");
 app.get("/_status", handlers.ping);
@@ -52,8 +58,4 @@ app.get("/health", handlers.ping);
 app.all("*", handlers.proxy);
 
 
-const server = app.listen(process.env.PORT || 9000, () => {
-    log.info("server listening on port %d", server.address().port);
-});
-
-module.exports = {server: server, setup: setup};
+module.exports = {start: start, setup: setup};

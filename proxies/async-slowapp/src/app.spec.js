@@ -16,9 +16,9 @@ describe("express with async-slowapp", function () {
     var env;
     before(function () {
         env = process.env;
-        let app = require("./server");
+        let app = require("./app");
         app.setup({ LOG_LEVEL: "debug", HOST:"https://fakehost.com"});
-        server = app.server;
+        server = app.start();
     });
 
     beforeEach(function () {
@@ -111,9 +111,9 @@ describe("express with async-slowapp with /sub", function () {
     var env;
     before(function () {
         env = process.env;
-        let app = require("./server");
+        let app = require("./app");
         app.setup({ LOG_LEVEL: "debug", HOST:"https://fakehost.com/sub"});
-        server = app.server;
+        server = app.start();
     });
 
     beforeEach(function () {
@@ -211,7 +211,6 @@ describe("express with async-slowapp with /sub", function () {
                 let poll_count = parseInt(cookies["poll-count"].split(";")[0].split("=")[1]);
                 assert.equal(poll_count, 0);
             })
-            .expect(202)
             .end(async ()=>{
                 let url = new URL(content_location);
                 request(server)
@@ -222,7 +221,7 @@ describe("express with async-slowapp with /sub", function () {
                         assert.isTrue(headers.has('content-location'));
                         assert.match(headers['content-location'], /^https:\/\/.*\/sub\/poll\?id=.*/)
                     })
-                    .expect(418, done)
+                    .expect(202, done)
             });
     });
 

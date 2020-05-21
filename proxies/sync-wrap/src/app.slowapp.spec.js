@@ -6,12 +6,16 @@ const assert = require("chai").assert;
 
 describe("express with slowapp no insecure", function () {
     var server;
+    var slow_server;
     var env;
     before(function () {
         env = process.env;
-        let app = require("./server");
-        app.setup({UPSTREAM: "https://localhost:9003", ALLOW_INSECURE: "false", LOG_LEVEL: "debug"});
-        server = app.server;
+        let app = require("./app");
+        app.setup({UPSTREAM: "http://localhost:9003", LOG_LEVEL: "debug"});
+        server = app.start();
+        let slowapp = require("../../async-slowapp/src/app");
+        slowapp.setup({HOST: "http://localhost:9003", LOG_LEVEL: "debug"});
+        slow_server = slowapp.start({PORT: 9003})
     });
 
     beforeEach(function () {
@@ -22,7 +26,9 @@ describe("express with slowapp no insecure", function () {
     });
     after(function () {
         process.env = env;
+        slow_server.close();
         server.close();
+
     });
 
     it("responds to /_status", (done) => {
@@ -35,19 +41,24 @@ describe("express with slowapp no insecure", function () {
     it("responds to /_ping upstream", (done) => {
         request(server)
             .get("/_ping")
-            .expect(502, done);
+            .expect(200, done);
     });
 });
 
 
 describe("express with slowap", function () {
     var server;
+    var slow_server;
     var env;
     before(function () {
         env = process.env;
-        let app = require("./server");
-        app.setup({UPSTREAM: "https://localhost:9003", ALLOW_INSECURE: "true", LOG_LEVEL: "debug"});
-        server = app.server;
+        let app = require("./app");
+        app.setup({UPSTREAM: "http://localhost:9003",  LOG_LEVEL: "debug"});
+        server = app.start();
+
+        let slowapp = require("../../async-slowapp/src/app");
+        slowapp.setup({HOST: "http://localhost:9003", LOG_LEVEL: "debug"});
+        slow_server = slowapp.start({PORT: 9003})
     });
 
     beforeEach(function () {
@@ -58,6 +69,7 @@ describe("express with slowap", function () {
     });
     after(function () {
         process.env = env;
+        slow_server.close();
         server.close();
     });
 
@@ -109,12 +121,17 @@ describe("express with slowap", function () {
 
 describe("express with slowap with sub path", function () {
     var server;
+    var slow_server;
     var env;
     before(function () {
         env = process.env;
-        let app = require("./server");
-        app.setup({UPSTREAM: "https://localhost:9003/sub", ALLOW_INSECURE: "true", LOG_LEVEL: "debug"});
-        server = app.server;
+        let app = require("./app");
+        app.setup({UPSTREAM: "http://localhost:9003/sub", LOG_LEVEL: "debug"});
+        server = app.start();
+
+        let slowapp = require("../../async-slowapp/src/app");
+        slowapp.setup({HOST: "http://localhost:9003/sub", LOG_LEVEL: "debug"});
+        slow_server = slowapp.start({PORT: 9003})
     });
 
     beforeEach(function () {
@@ -125,6 +142,7 @@ describe("express with slowap with sub path", function () {
     });
     after(function () {
         process.env = env;
+        slow_server.close();
         server.close();
     });
 
