@@ -4,8 +4,8 @@
   - name: NODE_ENV
     value: production
   - name: UPSTREAM
-    value: https://internal-dev.api.service.nhs.uk
+    value: https://{{ APIGEE_HOSTNAME }}
   - name: UNBOTLI
     value: true
   - name: LOG_LEVEL
-    value: debug
+    value: info

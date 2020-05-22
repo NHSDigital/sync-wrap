@@ -8,4 +8,4 @@
   - name: LOG_LEVEL
     value: debug
   - name: HOST
-    value: https://internal-dev.api.service.nhs.uk/async-slowapp
+    value: https://{{ APIGEE_HOSTNAME }}/async-slowapp
