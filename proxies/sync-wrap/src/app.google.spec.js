@@ -3,6 +3,14 @@ const request = require("supertest");
 const assert = require("chai").assert;
 const expect = require("chai").expect;
 
+describe("failing test", function () {
+
+    it("will always fail", (done) => {
+        assert.isTrue(false);
+        done()
+    });
+});
+
 
 describe("express with google upstream and botli decompress", function () {
     var server;
@@ -10,7 +18,7 @@ describe("express with google upstream and botli decompress", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({UPSTREAM: "https://www.google.co.uk", LOG_LEVEL: "debug", UNBOTLI: "true"});
+        app.setup({UPSTREAM: "https://www.google.co.uk", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"), UNBOTLI: "true"});
         server = app.start();
     });
 
@@ -76,7 +84,7 @@ describe("express with google upstream without botli decompress", function () {
         env = process.env;
 
         let app = require("./app");
-        app.setup({UPSTREAM: "https://www.google.co.uk", LOG_LEVEL: "debug", UNBOTLI: "false"});
+        app.setup({UPSTREAM: "https://www.google.co.uk", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"), UNBOTLI: "false"});
         server = app.start();
     });
 

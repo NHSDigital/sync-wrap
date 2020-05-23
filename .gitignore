@@ -46,3 +46,5 @@ dist/
 *.tgz
 *.zip
 
+# tests
+reports/

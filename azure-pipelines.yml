@@ -52,14 +52,14 @@ jobs:
       - bash: "make install"
         displayName: install packages
 
-#      - bash: "make test"
-#        displayName: run tests
+      - bash: "make test-no-fail"
+        displayName: run tests
 
-#      - task: PublishTestResults@2
-#        inputs:
-#          testResultsFormat: 'JUnit'
-#          testResultsFiles: 'newman/*.xml'
-#          failTaskOnFailedTests: true
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'xUnit'
+          testResultsFiles: 'reports/*.xml'
+          failTaskOnFailedTests: true
 
       - bash: "make dist"
         displayName: build artifact

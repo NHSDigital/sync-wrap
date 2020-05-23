@@ -11,10 +11,10 @@ describe("express with slowapp no insecure", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({UPSTREAM: "http://localhost:9003", LOG_LEVEL: "debug"});
+        app.setup({UPSTREAM: "http://localhost:9003", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
         server = app.start();
         let slowapp = require("../../async-slowapp/src/app");
-        slowapp.setup({HOST: "http://localhost:9003", LOG_LEVEL: "debug"});
+        slowapp.setup({HOST: "http://localhost:9003", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
         slow_server = slowapp.start({PORT: 9003})
     });
 
@@ -53,11 +53,11 @@ describe("express with slowap", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({UPSTREAM: "http://localhost:9003",  LOG_LEVEL: "debug"});
+        app.setup({UPSTREAM: "http://localhost:9003",  LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
         server = app.start();
 
         let slowapp = require("../../async-slowapp/src/app");
-        slowapp.setup({HOST: "http://localhost:9003", LOG_LEVEL: "debug"});
+        slowapp.setup({HOST: "http://localhost:9003", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
         slow_server = slowapp.start({PORT: 9003})
     });
 
@@ -126,11 +126,11 @@ describe("express with slowap with sub path", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({UPSTREAM: "http://localhost:9003/sub", LOG_LEVEL: "debug"});
+        app.setup({UPSTREAM: "http://localhost:9003/sub", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
         server = app.start();
 
         let slowapp = require("../../async-slowapp/src/app");
-        slowapp.setup({HOST: "http://localhost:9003/sub", LOG_LEVEL: "debug"});
+        slowapp.setup({HOST: "http://localhost:9003/sub", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
         slow_server = slowapp.start({PORT: 9003})
     });
 

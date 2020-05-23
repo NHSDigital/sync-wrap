@@ -8,7 +8,7 @@ compose_files = ${COMPOSE_FILES}
 pwd := ${PWD}
 dirname := $(notdir ${PWD})
 features = features
-modules :=async-slowapp sync-wrap
+modules :=sync-wrap async-slowapp
 
 list:
 	@grep '^[^#[:space:]].*:' Makefile
@@ -19,7 +19,7 @@ guard-%:
 		exit 1; \
 	fi
 
-clean:
+clean: clean-build clean-dist clean-reports
 	rm -rf ./build || true
 	@for dir in . $(modules); do \
 		make --no-print-directory -C proxies/$${dir} clean & \
@@ -37,6 +37,9 @@ clean-build:
 
 clean-dist:
 	rm -rf ./dist || true
+
+clean-reports:
+	rm -rf ./reports || true
 
 build: clean-build
 	@for dir in $(modules); do \
@@ -69,3 +72,13 @@ dist: clean-dist build
 	cp -R build/. dist/proxies
 	cp -R terraform dist
 #	cp -R tests dist
+
+test: clean-reports
+	@for dir in $(modules); do \
+		make --no-print-directory -C proxies/$${dir} test;\
+	done;
+
+test-no-fail: clean-reports
+	@for dir in $(modules); do \
+		make --no-print-directory -C proxies/$${dir} test || true;\
+	done;

@@ -17,8 +17,8 @@ describe("express with async-slowapp", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({ LOG_LEVEL: "debug", HOST:"https://fakehost.com"});
-        server = app.start();
+        app.setup({ LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"), HOST:"https://fakehost.com"});
+        server = app.start({PORT: 9002});
     });
 
     beforeEach(function () {
@@ -112,8 +112,8 @@ describe("express with async-slowapp with /sub", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({ LOG_LEVEL: "debug", HOST:"https://fakehost.com/sub"});
-        server = app.start();
+        app.setup({ LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"), HOST:"https://fakehost.com/sub"});
+        server = app.start({PORT: 9002});
     });
 
     beforeEach(function () {

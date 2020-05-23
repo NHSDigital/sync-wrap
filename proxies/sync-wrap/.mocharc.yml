@@ -1,0 +1,8 @@
+spec: './src/*.spec.js'
+ui: bdd
+watch-files:
+  - 'src/**/*.js'
+reporter: "mocha-multi"
+reporter-option:
+  - 'spec=-'
+  - 'xunit=../../reports/sync-wrap.xml'
