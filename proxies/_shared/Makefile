@@ -26,4 +26,7 @@ install:
 	npm install --dev
 
 test:
-	NODE_ENV=test npx mocha
+	NODE_ENV=test npx mocha --reporter spec
+
+test-report:
+	NODE_ENV=test npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=../../reports/tests/$(dirname).xml || true

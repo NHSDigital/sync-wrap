@@ -32,6 +32,8 @@ install:
 	done; \
 	wait
 
+reinstall: clean install
+
 clean-build:
 	rm -rf ./build || true
 
@@ -78,7 +80,7 @@ test: clean-reports
 		make --no-print-directory -C proxies/$${dir} test;\
 	done;
 
-test-no-fail: clean-reports
+test-report: clean-reports
 	@for dir in $(modules); do \
-		make --no-print-directory -C proxies/$${dir} test || true;\
+		make --no-print-directory -C proxies/$${dir} test-report; \
 	done;

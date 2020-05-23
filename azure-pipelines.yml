@@ -52,13 +52,13 @@ jobs:
       - bash: "make install"
         displayName: install packages
 
-      - bash: "make test-no-fail"
+      - bash: "make test-report"
         displayName: run tests
 
       - task: PublishTestResults@2
         inputs:
-          testResultsFormat: 'xUnit'
-          testResultsFiles: 'reports/*.xml'
+          testResultsFormat: 'JUnit'
+          testResultsFiles: 'reports/tests/*.xml'
           failTaskOnFailedTests: true
 
       - bash: "make dist"

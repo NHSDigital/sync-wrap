@@ -347,8 +347,8 @@ async function proxy(proxy_req, proxy_resp) {
             });
 
             request.on("error", err => {
-                log.error("upstream","error:", opts.method, opts.path, "\n", err);
-                reject({error: err})
+                log.error("upstream", "error", opts.method, opts.path, "\n", err);
+                reject({error: err, opts: opts})
             });
 
             if (request_stream !== undefined) {
@@ -398,7 +398,6 @@ async function proxy(proxy_req, proxy_resp) {
                 await send_response(response.statusCode, headers, response);
             })
             .catch(async (fin) => {
-                log.error(fin.error);
                 if (fin.error === "timeout") {
                     let response = options.last_response;
                     let headers = options.last_headers.withPreviousCookies(options.received_cookies);
@@ -432,7 +431,6 @@ async function proxy(proxy_req, proxy_resp) {
             await send_response(response.statusCode, headers, response);
         })
         .catch(async (fin) => {
-            log.error(fin.error);
             await send_response(fin.error === "timeout" ? 504 : 502);
         });
 
