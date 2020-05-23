@@ -3,13 +3,13 @@ const request = require("supertest");
 const assert = require("chai").assert;
 const expect = require("chai").expect;
 
-describe("failing test", function () {
-
-    it("will always fail", (done) => {
-        assert.isTrue(false);
-        done()
-    });
-});
+// describe("failing test", function () {
+//
+//     it("will always fail", (done) => {
+//         assert.isTrue(false);
+//         done()
+//     });
+// });
 
 
 describe("express with google upstream and botli decompress", function () {
