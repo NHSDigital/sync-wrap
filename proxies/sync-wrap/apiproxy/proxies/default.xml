@@ -15,7 +15,7 @@
         <Response>
             <Step>
                 <FaultRules/>
-                <Name>splunk-message-logging</Name>
+                <Name>splunk-hec-callout</Name>
             </Step>
         </Response>
     </PostClientFlow>
