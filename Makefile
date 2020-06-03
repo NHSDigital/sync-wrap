@@ -6,7 +6,7 @@ SHELL := /bin/bash
 ########################################################################################################################
 compose_files = ${COMPOSE_FILES}
 pwd := ${PWD}
-dirname := $(notdir ${PWD})
+dirname := $(notdir $(patsubst %/,%,$(CURDIR)))
 features = features
 modules :=sync-wrap async-slowapp
 

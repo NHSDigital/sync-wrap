@@ -79,14 +79,15 @@
                     }
                 }
             </Payload>
-            <Path>services/collector/event</Path>
             <Verb>POST</Verb>
         </Set>
     </Request>
     <Response>calloutResponse</Response>
     <Timeout>30000</Timeout>
     <HTTPTargetConnection>
-        <Properties/>
-        <URL>https://{private.splunk_host}</URL>
+        <LoadBalancer>
+            <Server name="splunk-onboarding"/>
+        </LoadBalancer>
+        <Path>services/collector/event</Path>
     </HTTPTargetConnection>
 </ServiceCallout>
