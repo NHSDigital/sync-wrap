@@ -68,6 +68,7 @@ dist: clean-dist build
 	cp -R terraform dist
 	cp -R utils dist
 	rm -rf dist/utils/.git
+	cp deploy-ecs-proxies.yml dist/
 #	cp -R tests dist
 
 test: clean-reports
