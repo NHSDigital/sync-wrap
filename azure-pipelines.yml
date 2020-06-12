@@ -31,23 +31,23 @@ jobs:
       - bash: "wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -; curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -; sudo apt-get install -y nodejs"
         displayName: install node
 
-#      - task: Cache@2
-#        displayName: "Cache async-slowapp NPM Dependencies"
-#        inputs:
-#          key: '"$(Agent.OS)" | "node-async-slowapp" | proxies/async-slowapp/package-lock.json'
-#          path: "proxies/async-slowapp/node_modules"
-#          restoreKeys: |
-#            "$(Agent.OS)" | "node-sandbox" | proxies/async-slowapp/package-lock.json'
-#            "$(Agent.OS)" | "node-sandbox"
-#
-#      - task: Cache@2
-#        displayName: "Cache sync-wrap NPM Dependencies"
-#        inputs:
-#          key: '"$(Agent.OS)" | "node-sync-wrap" | proxies/sync-wrap/package-lock.json'
-#          path: "proxies/sync-wrap/node_modules"
-#          restoreKeys: |
-#            "$(Agent.OS)" | "node-sync-wrap" | proxies/sync-wrap/package-lock.json
-#            "$(Agent.OS)" | "node-sync-wrap"
+      - task: Cache@2
+        displayName: "Cache async-slowapp NPM Dependencies"
+        inputs:
+          key: '"$(Agent.OS)" | "node-async-slowapp" | docker/async-slowapp/package-lock.json'
+          path: "docker/async-slowapp/node_modules"
+          restoreKeys: |
+            "$(Agent.OS)" | "node-async-slowapp" | docker/async-slowapp/package-lock.json'
+            "$(Agent.OS)" | "node-async-slowapp"
+
+      - task: Cache@2
+        displayName: "Cache sync-wrap NPM Dependencies"
+        inputs:
+          key: '"$(Agent.OS)" | "node-sync-wrap" | docker/sync-wrap/package-lock.json'
+          path: "proxies/sync-wrap/node_modules"
+          restoreKeys: |
+            "$(Agent.OS)" | "node-sync-wrap" | docker/sync-wrap/package-lock.json
+            "$(Agent.OS)" | "node-sync-wrap"
 
       - bash: "make install"
         displayName: install packages
