@@ -5,9 +5,7 @@ const app = require("./app");
 
 app.setup(process.env);
 
-
 const server = app.start(process.env);
-
 
 const signals = {
     'SIGHUP': 1,
@@ -29,6 +27,5 @@ Object.keys(signals).forEach((signal) => {
         shutdown(signal, signals[signal]);
     });
 });
-
 
 module.exports = {server: server};

@@ -21,6 +21,13 @@ jobs:
     steps:
       - checkout: self
 
+      - bash: |
+          echo pri: $(System.PullRequest.PullRequestId)"
+          echo prn: $(System.PullRequest.PullRequestNumber)"
+          exit(1)
+        displayName: check PR vars
+
+
       - bash: echo "##vso[task.setvariable variable=BRANCH_NAME]`echo $(System.PullRequest.SourceBranch) | sed -r 's/[/|\\@":<>?*]+/-/g'`"
         displayName: Set and replace invalid characters in branch name
 

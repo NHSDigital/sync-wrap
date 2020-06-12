@@ -1,0 +1,32 @@
+
+#docker_service_cpu: 256
+#docker_service_memory: 512
+
+docker_service:
+
+  - name: sync-wrap
+    port: 9000
+    expose: true
+    environment:
+      - name: NODE_ENV
+        value: production
+      - name: LOG_LEVEL
+        value: "debug"
+      - name: UPSTREAM
+        value: "{{ apigee_uri }}"
+    health_check:
+      matcher: "200"
+      path: "/_ping"
+
+  - name: sync-wrap_async-slowapp
+    port: 9001
+    expose: false
+    essential: false
+    environment:
+      - name: NODE_ENV
+        value: production
+      - name: PORT
+        value: "9001"
+    health_check:
+      matcher: "200"
+      path: "/_ping"

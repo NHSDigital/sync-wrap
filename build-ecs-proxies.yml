@@ -1,0 +1,12 @@
+
+
+
+docker_containers:
+
+  - name: sync-wrap
+    dockerfile: "docker/sync-wrap/Dockerfile"
+    path: "docker/sync-wrap"
+
+  - name: sync-wrap_async-slowapp
+    dockerfile: "docker/async-slowapp/Dockerfile"
+    path: "docker/async-slowapp"
