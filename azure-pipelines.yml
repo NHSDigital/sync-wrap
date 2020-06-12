@@ -25,9 +25,11 @@ jobs:
         displayName: Set and replace invalid characters in branch name
 
       - bash: |
-          python3 --version
-          python --version
-        displayName: check python version
+          which python
+          make ensure-utils
+          make -C utils build-prereqs
+          make -C utils install
+        displayName: setup utils
 
 
       - bash: 'echo "##vso[build.updatebuildnumber]$(BRANCH_NAME)+$(Build.BuildID)"'

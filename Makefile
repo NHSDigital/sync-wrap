@@ -49,7 +49,6 @@ ensure-utils:
 		git clone https://github.com/NHSDigital/api-management-utils.git utils; \
 	fi;
 	cd utils; git checkout mm-apm-1017-support-for-ecs-hosted-target-deploy # temp to test this branch
-	make --no-print-directory -C utils install
 
 
 build: clean-build ensure-utils
