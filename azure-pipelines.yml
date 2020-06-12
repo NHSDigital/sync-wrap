@@ -24,17 +24,14 @@ jobs:
       - bash: echo "##vso[task.setvariable variable=BRANCH_NAME]`echo $(System.PullRequest.SourceBranch) | sed -r 's/[/|\\@":<>?*]+/-/g'`"
         displayName: Set and replace invalid characters in branch name
 
-      - bash: |
-          which python
-          make ensure-utils
-          make -C utils build-prereqs
-          make -C utils install
-        displayName: setup utils
-
-
       - bash: 'echo "##vso[build.updatebuildnumber]$(BRANCH_NAME)+$(Build.BuildID)"'
         condition: eq(variables['Build.SourceBranchName'], 'merge')
         displayName: Update build ID if this is a pull request
+
+      - bash: make -c ensure-utils
+        displayName: ensure utils
+
+      - template: utils/build-prereqs.yml
 
       - bash: "wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -; curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -; sudo apt-get install -y nodejs"
         displayName: install node
