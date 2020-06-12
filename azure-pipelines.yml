@@ -34,20 +34,21 @@ jobs:
       - task: Cache@2
         displayName: "Cache async-slowapp NPM Dependencies"
         inputs:
-          key: '"$(Agent.OS)" | "node-async-slowapp" | docker/async-slowapp/package-lock.json'
+          key:  sync-wrap-node-async-slowapp | $(Agent.OS) | docker/async-slowapp/package-lock.json
           path: "docker/async-slowapp/node_modules"
           restoreKeys: |
-            "$(Agent.OS)" | "node-async-slowapp" | docker/async-slowapp/package-lock.json'
-            "$(Agent.OS)" | "node-async-slowapp"
+            sync-wrap-node-async-slowapp | $(Agent.OS) | docker/async-slowapp/package-lock.json
+            sync-wrap-node-async-slowapp | $(Agent.OS)
 
       - task: Cache@2
         displayName: "Cache sync-wrap NPM Dependencies"
         inputs:
-          key: '"$(Agent.OS)" | "node-sync-wrap" | docker/sync-wrap/package-lock.json'
-          path: "proxies/sync-wrap/node_modules"
+          key:  sync-wrap-node-sync-wrap | $(Agent.OS) | docker/sync-wrap/package-lock.json
+          path: "docker/sync-wrap/node_modules"
           restoreKeys: |
-            "$(Agent.OS)" | "node-sync-wrap" | docker/sync-wrap/package-lock.json
-            "$(Agent.OS)" | "node-sync-wrap"
+            sync-wrap-node-sync-wrap | $(Agent.OS) | docker/sync-wrap/package-lock.json
+            sync-wrap-node-sync-wrap | $(Agent.OS)
+
 
       - bash: "make install"
         displayName: install packages
