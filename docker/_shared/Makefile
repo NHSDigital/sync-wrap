@@ -7,7 +7,6 @@ list:
 build:
 	docker build .
 
-
 clean:
 	rm -rf ./node_modules
 

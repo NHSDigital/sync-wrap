@@ -22,9 +22,9 @@ jobs:
       - checkout: self
 
       - bash: |
-          echo pri: $(System.PullRequest.PullRequestId)"
-          echo prn: $(System.PullRequest.PullRequestNumber)"
-          exit(1)
+          echo pri: $(System.PullRequest.PullRequestId)
+          echo prn: $(System.PullRequest.PullRequestNumber)
+          exit 1
         displayName: check PR vars
 
 

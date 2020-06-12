@@ -1,1 +1,0 @@
-context.setVariable("request.header.x-mm-test", 'test');

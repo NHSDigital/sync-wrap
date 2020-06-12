@@ -9,7 +9,7 @@ pwd := ${PWD}
 dirname := $(notdir $(patsubst %/,%,$(CURDIR)))
 features = features
 proxies :=sync-wrap async-slowapp
-modules :=sync-wrap sync-wrap-async-slowapp
+modules :=sync-wrap async-slowapp
 
 list:
 	@grep '^[^#[:space:]].*:' Makefile
@@ -22,13 +22,13 @@ guard-%:
 
 clean: clean-build clean-dist clean-reports
 	rm -rf ./build || true
-	@for dir in . $(modules); do \
+	@for dir in $(modules); do \
 		make --no-print-directory -C docker/$${dir} clean & \
 	done; \
 	wait
 
 install:
-	@for dir in . $(modules); do \
+	@for dir in $(modules); do \
 		make --no-print-directory -C docker/$${dir} install & \
 	done; \
 	wait
@@ -46,8 +46,7 @@ clean-reports:
 
 ensure-utils:
 	@if [[ ! -d ./utils ]]; then \
-		echo "cloning"; \
-#		git clone https://github.com/NHSDigital/api-management-utils.git utils; \
+		git clone https://github.com/NHSDigital/api-management-utils.git utils; \
 	fi
 	make --no-print-directory -C utils install
 
@@ -56,8 +55,8 @@ build: clean-build ensure-utils
 	@for dir in $(modules); do \
 		make --no-print-directory -C docker/$${dir} build & \
 	done; \
-	@for dir in $(proxies); do \
-		make --no-print-directory -C docker/$${dir} build & \
+	for dir in $(proxies); do \
+		make --no-print-directory -C proxies/$${dir} build & \
 	done; \
 	wait
 
@@ -67,6 +66,8 @@ dist: clean-dist build
 	mkdir -p dist/proxies
 	cp -R build/. dist/proxies
 	cp -R terraform dist
+	cp -R utils dist
+	rm -rf dist/utils/.git
 #	cp -R tests dist
 
 test: clean-reports
