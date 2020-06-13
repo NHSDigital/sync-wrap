@@ -28,69 +28,66 @@ jobs:
       vmImage: 'ubuntu-20.04'
     steps:
       - checkout: self
-#        path: s
+        path: s
 
       - checkout: utils
-        path: utils
+        path: s/utils
 
-      - bash: |
-          ls -al
-          echo $PWD
-      - bash: |
-          echo $(Build.BuildNumber)
-          echo $(Build.BuildId)
-          echo $(Build.SourceVersion)
-          echo $(System.PullRequest.PullRequestId)
-          echo $(System.PullRequest.PullRequestNumber)
-          echo $(System.JobId)
 
-#      - bash: echo "##vso[task.setvariable variable=BRANCH_NAME]`echo $(System.PullRequest.SourceBranch) | sed -r 's/[/|\\@":<>?*]+/-/g'`"
-#        displayName: Set and replace invalid characters in branch name
-#
-#      - bash: 'echo "##vso[build.updatebuildnumber]$(BRANCH_NAME)+$(Build.BuildID)"'
-#        condition: eq(variables['Build.SourceBranchName'], 'merge')
-#        displayName: Update build ID if this is a pull request
-#
-#      - template: build-prereqs.yml@utils
-#
-#      - bash: "wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -; curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -; sudo apt-get install -y nodejs"
-#        displayName: install node
-#
-#      - task: Cache@2
-#        displayName: "Cache async-slowapp NPM Dependencies"
-#        inputs:
-#          key:  sync-wrap-node-async-slowapp | $(Agent.OS) | docker/async-slowapp/package-lock.json
-#          path: "docker/async-slowapp/node_modules"
-#          restoreKeys: |
-#            sync-wrap-node-async-slowapp | $(Agent.OS) | docker/async-slowapp/package-lock.json
-#            sync-wrap-node-async-slowapp | $(Agent.OS)
-#
-#      - task: Cache@2
-#        displayName: "Cache sync-wrap NPM Dependencies"
-#        inputs:
-#          key:  sync-wrap-node-sync-wrap | $(Agent.OS) | docker/sync-wrap/package-lock.json
-#          path: "docker/sync-wrap/node_modules"
-#          restoreKeys: |
-#            sync-wrap-node-sync-wrap | $(Agent.OS) | docker/sync-wrap/package-lock.json
-#            sync-wrap-node-sync-wrap | $(Agent.OS)
-#
-#
-#      - bash: "make install"
-#        displayName: install packages
-#
-#      - bash: "make test-report"
-#        displayName: run tests
-#
-#      - task: PublishTestResults@2
-#        inputs:
-#          testResultsFormat: 'JUnit'
-#          testResultsFiles: 'reports/tests/*.xml'
-#          failTaskOnFailedTests: true
-#
-#      - bash: "make dist"
-#        displayName: build artifact
-#
-#
-#
-#      - publish: dist/
-#        artifact: sync-wrap-$(Build.BuildNumber)
+      - bash: echo "##vso[task.setvariable variable=BRANCH_NAME]`echo $(System.PullRequest.SourceBranch) | sed -r 's/[/|\\@":<>?*]+/-/g'`"
+        displayName: Set and replace invalid characters in branch name
+
+      - bash: 'echo "##vso[build.updatebuildnumber]$(BRANCH_NAME)+$(Build.BuildID)"'
+        condition: eq(variables['Build.SourceBranchName'], 'merge')
+        displayName: Update build ID if this is a pull request
+
+      - bash: "wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -; curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -; sudo apt-get install -y nodejs"
+        displayName: install node
+
+      - task: Cache@2
+        displayName: "Cache async-slowapp NPM Dependencies"
+        inputs:
+          key:  sync-wrap-node-async-slowapp | $(Agent.OS) | docker/async-slowapp/package-lock.json
+          path: "docker/async-slowapp/node_modules"
+          restoreKeys: |
+            sync-wrap-node-async-slowapp | $(Agent.OS) | docker/async-slowapp/package-lock.json
+            sync-wrap-node-async-slowapp | $(Agent.OS)
+
+      - task: Cache@2
+        displayName: "Cache sync-wrap NPM Dependencies"
+        inputs:
+          key:  sync-wrap-node-sync-wrap | $(Agent.OS) | docker/sync-wrap/package-lock.json
+          path: "docker/sync-wrap/node_modules"
+          restoreKeys: |
+            sync-wrap-node-sync-wrap | $(Agent.OS) | docker/sync-wrap/package-lock.json
+            sync-wrap-node-sync-wrap | $(Agent.OS)
+
+
+      - bash: "make install"
+        displayName: install packages
+
+      - bash: "make test-report"
+        displayName: run tests
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: 'reports/tests/*.xml'
+          failTaskOnFailedTests: true
+
+      - bash: "make dist"
+        displayName: build artifact
+
+      - template: az/build-prereqs.yml@utils
+
+      - template: az/create-build-env-vars.yml@utils
+        parameters:
+          out_dir: 'dist'
+          service_name: 'sync-wrap'
+
+      - template: az/build-and-push-ecs-proxies.yml@utils
+        parameters:
+          env_vars_dir: 'dist'
+
+      - publish: dist/
+        artifact: sync-wrap-$(Build.BuildNumber)
