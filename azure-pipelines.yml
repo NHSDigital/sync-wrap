@@ -66,14 +66,14 @@ jobs:
       - bash: "make install"
         displayName: install packages
 
-      - bash: "make test-report"
-        displayName: run tests
-
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFormat: 'JUnit'
-          testResultsFiles: 'reports/tests/*.xml'
-          failTaskOnFailedTests: true
+#      - bash: "make test-report"
+#        displayName: run tests
+#
+#      - task: PublishTestResults@2
+#        inputs:
+#          testResultsFormat: 'JUnit'
+#          testResultsFiles: 'reports/tests/*.xml'
+#          failTaskOnFailedTests: true
 
       - bash: "make dist"
         displayName: build artifact
@@ -85,9 +85,9 @@ jobs:
           out_dir: 'dist'
           service_name: 'sync-wrap'
 
-#      - template: az/build-and-push-ecs-proxies.yml@utils
-#        parameters:
-#          env_vars_dir: 'dist'
+      - template: az/build-and-push-ecs-proxies.yml@utils
+        parameters:
+          env_vars_dir: 'dist'
 
       - publish: dist/
         artifact: sync-wrap-$(Build.BuildNumber)
