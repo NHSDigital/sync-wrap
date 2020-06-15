@@ -1,9 +1,5 @@
 <APIProxy name="sync-wrap">
     <!-- This is the root of the application -->
     <Description>Proxy to a target service.</Description>
-    <Policies>
-        <Policy>get-splunk-secrets</Policy>
-        <Policy>splunk-hec-callout</Policy>
-        <Policy>add-js-header</Policy>
-    </Policies>
+    <Policies />
 </APIProxy>
