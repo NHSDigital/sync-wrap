@@ -61,7 +61,6 @@ jobs:
             sync-wrap-node-sync-wrap | $(Agent.OS) | docker/sync-wrap/package-lock.json
             sync-wrap-node-sync-wrap | $(Agent.OS)
 
-
       - bash: "make install"
         displayName: install packages
 
@@ -94,4 +93,3 @@ jobs:
 
       - publish: dist/
         artifact: sync-wrap-$(Build.BuildNumber)
-
