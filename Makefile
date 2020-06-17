@@ -68,8 +68,10 @@ dist: clean-dist build
 	cp -R terraform dist
 	cp -R utils dist
 	rm -rf dist/utils/.git
-	cp ecs-proxies-deploy.yml dist/
-#	cp -R tests dist
+	cp ecs-proxies-deploy.yml dist/ecs-deploy-internal-dev.yml
+	cp ecs-proxies-deploy.yml dist/ecs-deploy-ref.yml
+	cp ecs-proxies-deploy.yml dist/ecs-deploy-int.yml
+	cp ecs-proxies-deploy.yml dist/ecs-deploy-prod.yml
 
 test: clean-reports
 	@for dir in $(modules); do \
