@@ -53,6 +53,7 @@ function start(options) {
 }
 
 const handlers = require("./handlers");
+app.get("/_ping", handlers.ping);
 app.get("/_status", handlers.ping);
 app.get("/health", handlers.ping);
 app.all("*", handlers.proxy);

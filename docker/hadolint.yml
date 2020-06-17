@@ -1,0 +1,3 @@
+ignored:
+  - DL3007   # allow latest tag
+  - DL3018   # allow latest apk versions

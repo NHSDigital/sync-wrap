@@ -8,6 +8,7 @@ compose_files = ${COMPOSE_FILES}
 pwd := ${PWD}
 dirname := $(notdir $(patsubst %/,%,$(CURDIR)))
 features = features
+proxies :=sync-wrap async-slowapp
 modules :=sync-wrap async-slowapp
 
 list:
@@ -21,14 +22,14 @@ guard-%:
 
 clean: clean-build clean-dist clean-reports
 	rm -rf ./build || true
-	@for dir in . $(modules); do \
-		make --no-print-directory -C proxies/$${dir} clean & \
+	@for dir in $(modules); do \
+		make --no-print-directory -C docker/$${dir} clean & \
 	done; \
 	wait
 
 install:
-	@for dir in . $(modules); do \
-		make --no-print-directory -C proxies/$${dir} install & \
+	@for dir in $(modules); do \
+		make --no-print-directory -C docker/$${dir} install & \
 	done; \
 	wait
 
@@ -43,44 +44,50 @@ clean-dist:
 clean-reports:
 	rm -rf ./reports || true
 
-build: clean-build
+ensure-utils:
+	@if [[ ! -d ./utils ]]; then \
+		git clone https://github.com/NHSDigital/api-management-utils.git utils; \
+	fi;
+	cd utils; git checkout mm-apm-1017-support-for-ecs-hosted-target-deploy # temp to test this branch
+
+
+build: clean-build ensure-utils
 	@for dir in $(modules); do \
+		make --no-print-directory -C docker/$${dir} build & \
+	done; \
+	for dir in $(proxies); do \
 		make --no-print-directory -C proxies/$${dir} build & \
 	done; \
 	wait
 
 build-proxy: build
 
-deploy:
-	@for dir in $(modules); do \
-		make --no-print-directory -C proxies/$${dir} deploy & \
-	done; \
-	wait
-
-undeploy:
-	@for dir in $(modules); do \
-		make --no-print-directory -C proxies/$${dir} undeploy & \
-	done; \
-	wait
-
-delete:
-	@for dir in $(modules); do \
-		make --no-print-directory -C proxies/$${dir} delete & \
-	done; \
-	wait
-
 dist: clean-dist build
 	mkdir -p dist/proxies
 	cp -R build/. dist/proxies
 	cp -R terraform dist
-#	cp -R tests dist
+	cp -R utils dist
+	rm -rf dist/utils/.git
+	cp ecs-proxies-deploy.yml dist/ecs-deploy-internal-dev.yml
+	cp ecs-proxies-deploy.yml dist/ecs-deploy-ref.yml
+	cp ecs-proxies-deploy.yml dist/ecs-deploy-int.yml
+	cp ecs-proxies-deploy.yml dist/ecs-deploy-prod.yml
 
 test: clean-reports
 	@for dir in $(modules); do \
-		make --no-print-directory -C proxies/$${dir} test;\
+		make --no-print-directory -C docker/$${dir} test;\
 	done;
 
 test-report: clean-reports
 	@for dir in $(modules); do \
-		make --no-print-directory -C proxies/$${dir} test-report; \
+		make --no-print-directory -C docker/$${dir} test-report; \
 	done;
+
+hadolint:
+	@echo "hadolint --config=docker/hadolint.yml docker/*/Dockerfile"
+	@# The pipe swallows return code, so no need for "|| true".
+	@docker run --rm -i -v ${PWD}/docker:/docker:ro hadolint/hadolint hadolint --config=docker/hadolint.yml docker/*/Dockerfile | sed 's/:\([0-9]\+\) /:\1:0 /'
+
+shellcheck:
+	@# Only swallow checking errors (rc=1), not fatal problems (rc=2)
+	docker run --rm -i -v ${PWD}:/mnt:ro koalaman/shellcheck -f gcc -e SC1090,SC1091 `find * -prune -o -name '*.sh' -print` || test $$? -eq 1

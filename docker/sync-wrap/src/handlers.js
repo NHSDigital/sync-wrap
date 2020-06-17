@@ -220,7 +220,10 @@ const sleep = (delay) => {
     });
 };
 
-async function ping(req, res) { res.json({ping: "pong"}); }
+async function ping(req, res) {
+    log.info("ping");
+    res.json({ping: "pong"});
+}
 
 async function env(req, res) { res.json({env: process.env}); }
 

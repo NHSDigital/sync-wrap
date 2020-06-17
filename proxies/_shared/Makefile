@@ -8,7 +8,6 @@ build:
 	rm -rf ../../build/$(dirname) || true
 	mkdir -p ../../build/$(dirname)
 	cp -r ./apiproxy ../../build/$(dirname)
-	rsync -av --include={'package*.json','src','*.js'} --exclude="*" --exclude={'*.spec.js'} ./ ../../build/$(dirname)/apiproxy/resources/hosted
 
 deploy: build
 	cd ../../build/$(dirname) && apigeetool deployproxy -V -o nhsd-nonprod -e internal-dev -n $(dirname) -t $$(get_token)
@@ -21,12 +20,3 @@ delete:
 
 clean:
 	rm -rf ./node_modules
-
-install:
-	npm install --dev
-
-test:
-	NODE_ENV=test npx mocha --reporter spec
-
-test-report:
-	NODE_ENV=test npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=../../reports/tests/$(dirname).xml || true

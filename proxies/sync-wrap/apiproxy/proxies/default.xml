@@ -1,29 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ProxyEndpoint name="default">
+    <PreFlow name="PreFlow"/>
     <Flows/>
-    <PreFlow name="PreFlow">
-        <Request>
-            <Step>
-                <Name>get-splunk-secrets</Name>
-            </Step>
-            <Step>
-                <Name>add-js-header</Name>
-            </Step>
-        </Request>
-        <Response/>
-    </PreFlow>
-    <PostClientFlow>
-        <Response>
-            <Step>
-                <FaultRules/>
-                <Name>splunk-hec-callout</Name>
-            </Step>
-        </Response>
-    </PostClientFlow>
+    <PostFlow name="PostFlow"/>
     <HTTPProxyConnection>
-        <BasePath>/sync-wrap</BasePath>
+        <BasePath>{{ SERVICE_BASE_PATH }}</BasePath>
         <VirtualHost>secure</VirtualHost>
     </HTTPProxyConnection>
-    <RouteRule name="sync-wrap">
-        <TargetEndpoint>sync-wrap</TargetEndpoint>
+    <RouteRule name="apim">
+        <TargetEndpoint>apim</TargetEndpoint>
     </RouteRule>
 </ProxyEndpoint>
