@@ -221,7 +221,10 @@ const sleep = (delay) => {
 };
 
 async function ping(req, res) {
-    log.info("ping");
+    let query =  Object.assign({}, req.query);
+    if ('log' in query) {
+        log.info(`/ping?${querystring.stringify(query)}`);
+    }
     res.json({ping: "pong"});
 }
 
