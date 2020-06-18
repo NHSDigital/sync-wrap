@@ -92,3 +92,4 @@ jobs:
 
       - publish: dist/
         artifact: sync-wrap-$(Build.BuildNumber)
+
