@@ -6,6 +6,7 @@ resources:
       name: NHSDigital/api-management-utils
       endpoint: NHSDigital
       type: github
+      ref: refs/heads/mm-apm-1131-aws-char-name-limits
 
 trigger:
   branches:
@@ -80,7 +81,7 @@ jobs:
       - template: az/create-build-env-vars.yml@utils
         parameters:
           out_dir: 'dist'
-          service_name: 'sync-wrap'
+          service_id: 'sync-wrap'
 
       - template: az/become-build-user.yml@utils
         parameters:
