@@ -44,14 +44,7 @@ clean-dist:
 clean-reports:
 	rm -rf ./reports || true
 
-ensure-utils:
-	@if [[ ! -d ./utils ]]; then \
-		git clone https://github.com/NHSDigital/api-management-utils.git utils; \
-	fi;
-	cd utils; git checkout mm-apm-1017-support-for-ecs-hosted-target-deploy # temp to test this branch
-
-
-build: clean-build ensure-utils
+build: clean-build
 	@for dir in $(modules); do \
 		make --no-print-directory -C docker/$${dir} build & \
 	done; \
@@ -91,3 +84,4 @@ hadolint:
 shellcheck:
 	@# Only swallow checking errors (rc=1), not fatal problems (rc=2)
 	docker run --rm -i -v ${PWD}:/mnt:ro koalaman/shellcheck -f gcc -e SC1090,SC1091 `find * -prune -o -name '*.sh' -print` || test $$? -eq 1
+

@@ -6,6 +6,7 @@ resources:
       name: NHSDigital/api-management-utils
       endpoint: NHSDigital
       type: github
+#      ref: refs/heads/<xxxx>
 
 trigger:
   branches:
@@ -22,7 +23,7 @@ pr:
 jobs:
   - job: build
     displayName: Build & Test
-    timeoutInMinutes: 10
+    timeoutInMinutes: 30
     pool:
       vmImage: 'ubuntu-20.04'
     steps:
