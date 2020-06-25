@@ -8,7 +8,7 @@ compose_files = ${COMPOSE_FILES}
 pwd := ${PWD}
 dirname := $(notdir $(patsubst %/,%,$(CURDIR)))
 features = features
-proxies :=sync-wrap async-slowapp
+proxies :=live
 modules :=sync-wrap async-slowapp
 
 list:
