@@ -3,6 +3,11 @@
     <PreFlow name="PreFlow"/>
     <Flows/>
     <PostFlow name="PostFlow"/>
+    <PostClientFlow name="PostClientFlow">
+        <Response>
+            <Step>FlowCallout.LogToSplunk</Step>
+        </Response>
+    </PostClientFlow>
     <HTTPProxyConnection>
         <BasePath>{{ SERVICE_BASE_PATH }}</BasePath>
         <VirtualHost>secure</VirtualHost>
