@@ -58,7 +58,6 @@ build-proxy: build
 dist: clean-dist build
 	mkdir -p dist/proxies
 	cp -R build/. dist/proxies
-	cp -R terraform dist
 	cp -R utils dist
 	rm -rf dist/utils/.git
 	cp ecs-proxies-deploy.yml dist/ecs-deploy-internal-dev.yml
