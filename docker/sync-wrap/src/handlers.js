@@ -298,7 +298,11 @@ async function proxy(proxy_req, proxy_resp) {
         delete query.syncWait;
     }
 
-    let path = query.isEmpty() ? `${locals.base_path}${proxy_req.params[0]}` : `${locals.base_path}${proxy_req.params[0]}?${querystring.stringify(query)}`;
+    let request_path = proxy_req.path
+
+    log.debug(`>>>> Incoming parameters: ${request_path}`)
+
+    let path = query.isEmpty() ? `${locals.base_path}${request_path}` : `${locals.base_path}${request_path}?${querystring.stringify(query)}`;
 
     let headers = proxy_req.rawHeaders.asMultiValue();
 
@@ -420,13 +424,13 @@ async function proxy(proxy_req, proxy_resp) {
         .then(async (outcome) => {
             let response = outcome.response;
             let headers = outcome.headers;
-            console.log(`>>> Headers: ${headers}`)
-            console.log(`>>> Respond Async: ${respond_async}`)
-            console.log(`>>> Response Status Code: ${outcome.response.statusCode}`)
+            log.debug(`>>> Headers: ${JSON.stringify(headers)}`)
+            log.debug(`>>> Respond Async: ${respond_async}`)
+            log.debug(`>>> Response Status Code: ${outcome.response.statusCode}`)
             if (!respond_async && outcome.response.statusCode === 202 && headers.has("content-location")) {
                 let poll_options = Object.assign({}, outcome.options);
                 let poll_location = new URL(headers.get("content-location"));
-                console.log(`>>> Polling Location: ${poll_location}`)
+                log.debug(`>>> Polling Location: ${poll_location}`)
                 poll_options.path = poll_location.pathname + poll_location.search;
                 poll_options.headers = options.headers.clone();
                 poll_options.method = "GET";
