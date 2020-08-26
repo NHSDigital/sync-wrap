@@ -84,9 +84,12 @@ shellcheck:
 	@# Only swallow checking errors (rc=1), not fatal problems (rc=2)
 	docker run --rm -i -v ${PWD}:/mnt:ro koalaman/shellcheck -f gcc -e SC1090,SC1091 `find * -prune -o -name '*.sh' -print` || test $$? -eq 1
 
+lint: hadolint
+
 pass:
 	@echo ""
 
 check-licenses: pass
 publish: pass
+
 release: dist

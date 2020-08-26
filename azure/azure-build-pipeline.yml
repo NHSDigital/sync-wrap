@@ -28,4 +28,14 @@ extends:
   parameters:
     service_name: ${{ variables.service_name }}
     short_service_name: ${{ variables.short_service_name }}
-
+    test_steps:
+        - bash: "make test-report"
+          displayName: run tests
+          workingDirectory: "${{ variables.service_name }}"
+        - task: PublishTestResults@2
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: 'reports/tests/*.xml'
+            failTaskOnFailedTests: true
+          displayName: publish test report
+          workingDirectory: "${{ variables.service_name }}"
