@@ -9,6 +9,7 @@ resources:
       type: github
       name: NHSDigital/api-management-utils
       endpoint: NHSDigital
+      ref: mm-apm-1266-separate-internal-dev-sandbox
   pipelines:
   - pipeline: build_pipeline
     source: "Spine-Directory-Service-Build"
