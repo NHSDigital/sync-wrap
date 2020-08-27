@@ -33,6 +33,12 @@ install:
 	done; \
 	wait
 
+update:
+	@for dir in $(modules); do \
+		make --no-print-directory -C docker/$${dir} update & \
+	done; \
+	wait
+
 reinstall: clean install
 
 clean-build:
@@ -58,8 +64,8 @@ build-proxy: build
 dist: clean-dist build
 	mkdir -p dist/proxies
 	cp -R build/. dist/proxies
-	cp -R utils dist
-	rm -rf dist/utils/.git
+#	cp -R utils dist
+#	rm -rf dist/utils/.git
 	cp ecs-proxies-deploy.yml dist/ecs-deploy-internal-dev.yml
 	cp ecs-proxies-deploy.yml dist/ecs-deploy-ref.yml
 	cp ecs-proxies-deploy.yml dist/ecs-deploy-int.yml
@@ -84,3 +90,12 @@ shellcheck:
 	@# Only swallow checking errors (rc=1), not fatal problems (rc=2)
 	docker run --rm -i -v ${PWD}:/mnt:ro koalaman/shellcheck -f gcc -e SC1090,SC1091 `find * -prune -o -name '*.sh' -print` || test $$? -eq 1
 
+lint: hadolint
+
+pass:
+	@echo ""
+
+check-licenses: pass
+publish: pass
+
+release: dist

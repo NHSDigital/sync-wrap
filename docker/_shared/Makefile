@@ -13,6 +13,9 @@ clean:
 install:
 	npm install --dev
 
+update:
+	npm update
+
 test:
 	NODE_ENV=test npx mocha --reporter spec
 
