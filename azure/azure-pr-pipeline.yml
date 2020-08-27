@@ -36,3 +36,4 @@ extends:
     product_description: ${{ variables.product_description }}
     apigee_deployments:
       - environment: internal-dev
+      - environment: internal-dev-sandbox
