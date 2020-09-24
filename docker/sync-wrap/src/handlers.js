@@ -279,28 +279,31 @@ async function proxy(proxy_req, proxy_resp) {
 
     let syncWait = locals.default_syncwait;
 
-    if ("syncWait" in query) {
-        if(isNaN(query.syncWait)){
-            proxy_resp.status(400);
-            proxy_resp.json({
-                err: "syncWait should be a number between 0.25 and 59"
-            });
-            return
-        }
-        syncWait = parseFloat(query.syncWait);
-        if (syncWait < 0.25 || syncWait > 59) {
-            proxy_resp.status(400);
-            proxy_resp.json({
-                err: "syncWait should be a number between 0.25 and 59"
-            });
-            return
-        }
-        delete query.syncWait;
-    }
 
     let path = query.isEmpty() ? `${locals.base_path}${proxy_req.params[0]}` : `${locals.base_path}${proxy_req.params[0]}?${querystring.stringify(query)}`;
 
     let headers = proxy_req.rawHeaders.asMultiValue();
+
+
+    if (headers.has('X-Sync-Wait')) {
+        syncWait = headers.get('X-Sync-Wait');
+        if(isNaN(syncWait)){
+            proxy_resp.status(400);
+            proxy_resp.json({
+                err: "x-sync-wait should be a number between 0.25 and 59"
+            });
+            return
+        }
+        syncWait = parseFloat(syncWait);
+        if (syncWait < 0.25 || syncWait > 59) {
+            proxy_resp.status(400);
+            proxy_resp.json({
+                err: "x-sync-wait should be a number between 0.25 and 59"
+            });
+            return
+        }
+        headers.remove('X-Sync-Wait');
+    }
 
     delete headers.host;
     headers.set("X-Forwarded-For", proxy_req.connection.remoteAddress);

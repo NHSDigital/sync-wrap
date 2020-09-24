@@ -86,14 +86,15 @@ describe("express with slowap", function () {
             .expect(200, done);
     });
 
-    it("it times out if syncwait shorter than initial response", (done) => {
+    it("it times out if x-sync-wait shorter than initial response", (done) => {
         request(server)
-            .get("/slow?delay=5&syncWait=0.25")
+            .get("/slow?delay=5")
+            .set("x-sync-wait", "0.25")
             .set("Accept", "application/json")
             .expect(504, done);
     }).timeout(10000);
 
-    it("slowapp default syncWait final status 500", (done) => {
+    it("slowapp default x-sync-wait final status 500", (done) => {
         request(server)
             .get("/slow?final_status=500&complete_in=0.5")
             .set("Accept", "application/json")
@@ -108,9 +109,10 @@ describe("express with slowap", function () {
     }).timeout(10000);
 
 
-    it("slowapp default syncWait not complete", (done) => {
+    it("slowapp default x-sync-wait not complete", (done) => {
         request(server)
-            .get("/slow?final_status=500&complete_in=5&syncWait=1")
+            .get("/slow?final_status=500&complete_in=5")
+            .set("x-sync-wait", "1")
             .expect("Content-Location", /^http:\/\/localhost:9003\/poll\?id=.*/)
             .expect(202, done);
     }).timeout(10000);
@@ -156,12 +158,13 @@ describe("express with slowap with sub path", function () {
 
     it("it times out if syncwait shorter than initial response", (done) => {
         request(server)
-            .get("/slow?delay=5&syncWait=0.25")
+            .get("/slow?delay=5")
+            .set("x-sync-wait", "0.25")
             .set("Accept", "application/json")
             .expect(504, done);
     }).timeout(10000);
 
-    it("slowapp default syncWait final status 500", (done) => {
+    it("slowapp default x-sync-wait final status 500", (done) => {
         request(server)
             .get("/slow?final_status=500&complete_in=0.5")
             .set("Accept", "application/json")
@@ -176,16 +179,18 @@ describe("express with slowap with sub path", function () {
     }).timeout(10000);
 
 
-    it("slowapp default syncWait not complete", (done) => {
+    it("slowapp default x-sync-wait not complete", (done) => {
         request(server)
-            .get("/slow?final_status=500&complete_in=5&syncWait=1")
+            .get("/slow?final_status=500&complete_in=5")
+            .set("x-sync-wait", "1")
             .expect("Content-Location", /^http:\/\/localhost:9003\/sub\/poll\?id=.*/)
             .expect(202, done);
     }).timeout(10000);
 
     // it("slowapp patch request", (done) => {
     //     request(server)
-    //         .patch("/slow?final_status=500&complete_in=5&syncWait=1")
+    //         .patch("/slow?final_status=500&complete_in=5")
+    //         .set("x-sync-wait", "1")
     //         .expect("Content-Location", /^http:\/\/localhost:9003\/sub\/poll\?id=.*/)
     //         .expect(202, done);
     // }).timeout(10000);
