@@ -375,8 +375,9 @@ async function proxy(proxy_req, proxy_resp) {
         let remaining_timeout = options.respond_before.getTime() - (new Date()).getTime();
 
         if (remaining_timeout < 10) {
-            let response = options.last_response;
-            await send_response(response.statusCode, options.last_headers, response);
+            let prev_cookies = options.received_cookies.values();
+            let timeout_headers = prev_cookies.length === 0 ? undefined : ["set-cookie", prev_cookies];
+            await send_response(504, timeout_headers);
             return
         }
 
@@ -403,7 +404,6 @@ async function proxy(proxy_req, proxy_resp) {
                     await poll_async(outcome.options);
                     return
                 }
-
                 await send_response(response.statusCode, headers, response);
             })
             .catch(async (fin) => {

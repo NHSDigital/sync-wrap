@@ -113,8 +113,7 @@ describe("express with slowap", function () {
         request(server)
             .get("/slow?final_status=500&complete_in=5")
             .set("x-sync-wait", "1")
-            .expect("Content-Location", /^http:\/\/localhost:9003\/poll\?id=.*/)
-            .expect(202, done);
+            .expect(504, done);
     }).timeout(10000);
 
 });
@@ -183,8 +182,7 @@ describe("express with slowap with sub path", function () {
         request(server)
             .get("/slow?final_status=500&complete_in=5")
             .set("x-sync-wait", "1")
-            .expect("Content-Location", /^http:\/\/localhost:9003\/sub\/poll\?id=.*/)
-            .expect(202, done);
+            .expect(504, done);
     }).timeout(10000);
 
     // it("slowapp patch request", (done) => {
