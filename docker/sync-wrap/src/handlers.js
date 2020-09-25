@@ -279,28 +279,31 @@ async function proxy(proxy_req, proxy_resp) {
 
     let syncWait = locals.default_syncwait;
 
-    if ("syncWait" in query) {
-        if(isNaN(query.syncWait)){
-            proxy_resp.status(400);
-            proxy_resp.json({
-                err: "syncWait should be a number between 0.25 and 59"
-            });
-            return
-        }
-        syncWait = parseFloat(query.syncWait);
-        if (syncWait < 0.25 || syncWait > 59) {
-            proxy_resp.status(400);
-            proxy_resp.json({
-                err: "syncWait should be a number between 0.25 and 59"
-            });
-            return
-        }
-        delete query.syncWait;
-    }
 
     let path = query.isEmpty() ? `${locals.base_path}${proxy_req.params[0]}` : `${locals.base_path}${proxy_req.params[0]}?${querystring.stringify(query)}`;
 
     let headers = proxy_req.rawHeaders.asMultiValue();
+
+
+    if (headers.has('X-Sync-Wait')) {
+        syncWait = headers.get('X-Sync-Wait');
+        if(isNaN(syncWait)){
+            proxy_resp.status(400);
+            proxy_resp.json({
+                err: "x-sync-wait should be a number between 0.25 and 59"
+            });
+            return
+        }
+        syncWait = parseFloat(syncWait);
+        if (syncWait < 0.25 || syncWait > 59) {
+            proxy_resp.status(400);
+            proxy_resp.json({
+                err: "x-sync-wait should be a number between 0.25 and 59"
+            });
+            return
+        }
+        headers.remove('X-Sync-Wait');
+    }
 
     delete headers.host;
     headers.set("X-Forwarded-For", proxy_req.connection.remoteAddress);
@@ -372,8 +375,9 @@ async function proxy(proxy_req, proxy_resp) {
         let remaining_timeout = options.respond_before.getTime() - (new Date()).getTime();
 
         if (remaining_timeout < 10) {
-            let response = options.last_response;
-            await send_response(response.statusCode, options.last_headers, response);
+            let prev_cookies = options.received_cookies.values();
+            let timeout_headers = prev_cookies.length === 0 ? undefined : ["set-cookie", prev_cookies];
+            await send_response(504, timeout_headers);
             return
         }
 
@@ -400,7 +404,6 @@ async function proxy(proxy_req, proxy_resp) {
                     await poll_async(outcome.options);
                     return
                 }
-
                 await send_response(response.statusCode, headers, response);
             })
             .catch(async (fin) => {
