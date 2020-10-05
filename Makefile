@@ -67,6 +67,7 @@ dist: clean-dist build
 #	cp -R utils dist
 #	rm -rf dist/utils/.git
 	cp ecs-proxies-deploy.yml dist/ecs-deploy-internal-dev.yml
+	cp ecs-proxies-deploy.yml dist/ecs-deploy-internal-qa.yml
 	cp ecs-proxies-deploy.yml dist/ecs-deploy-ref.yml
 	cp ecs-proxies-deploy.yml dist/ecs-deploy-int.yml
 	cp ecs-proxies-deploy.yml dist/ecs-deploy-prod.yml
