@@ -290,15 +290,15 @@ async function proxy(proxy_req, proxy_resp) {
         if(isNaN(syncWait)){
             proxy_resp.status(400);
             proxy_resp.json({
-                err: "x-sync-wait should be a number between 1 and 1000"
+                err: "x-sync-wait should be a number between 0.25 and 59"
             });
             return
         }
         syncWait = parseFloat(syncWait);
-        if (syncWait < 1 || syncWait > 1000) {
+        if (syncWait < 0.25 || syncWait > 59) {
             proxy_resp.status(400);
             proxy_resp.json({
-                err: "x-sync-wait should be a number between 1 and 1000"
+                err: "x-sync-wait should be a number between 0.25 and 59"
             });
             return
         }
