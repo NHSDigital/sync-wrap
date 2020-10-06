@@ -384,7 +384,7 @@ async function proxy(proxy_req, proxy_resp) {
         await sleep(Math.min(options.sleep, remaining_timeout));
 
         remaining_timeout = options.respond_before.getTime() - (new Date()).getTime();
-        options.timeout = Math.max(remaining_timeout, 50);
+        options.timeout = Math.max(remaining_timeout, 50000);
 
 
         options.sleep = Math.min(2*options.sleep, locals.max_sleep);
