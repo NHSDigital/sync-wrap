@@ -103,6 +103,11 @@ class MultiValueHeaders {
         return this;
     }
 
+    overwrite(key, val) {
+        this[key] = val;
+        return this;
+    }
+
     get(header) {
         header = header.toLowerCase();
         return this[header];
@@ -225,7 +230,7 @@ async function ping(req, res) {
     if ('log' in query) {
         log.info(`/ping?${querystring.stringify(query)}`);
     }
-    res.json({ping: "pong"});
+    res.json({ping: "pong", service: "sync-wrap"});
 }
 
 async function env(req, res) { res.json({env: process.env}); }
@@ -306,7 +311,9 @@ async function proxy(proxy_req, proxy_resp) {
     }
 
     delete headers.host;
+    // should we hide this ?
     headers.set("X-Forwarded-For", proxy_req.connection.remoteAddress);
+    headers.remove("x-sync-wrapped")
     headers.set("x-sync-wrapped", "true");
 
     let respond_async = headers.prefer === "respond-async";
