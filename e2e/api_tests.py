@@ -40,6 +40,16 @@ async def test_app_ping(api: SessionClient, test_config: TestSessionConfig):
 
 
 @pytest.mark.asyncio
+async def test_api_status_with_service_header_another_service(api: SessionClient):
+
+    async with api.get("_status", headers={'x-apim-service': 'async-slowapp'}) as r:
+        assert r.status == 200
+        body = await r.json()
+
+        assert body == dict(ping='pong', service='sync-wrap')
+
+
+@pytest.mark.asyncio
 async def test_api_status_with_service_header(api: SessionClient):
 
     async with api.get("_status", headers={'x-apim-service': 'sync-wrap'}) as r:
