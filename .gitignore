@@ -5,6 +5,12 @@
 .ipynb_checkpoints
 *.swp
 
+# python
+.venv/
+.pytest_cache/
+*.pyc
+.coverage
+__pycache__/
 
 # Misc
 !.gitkeep
