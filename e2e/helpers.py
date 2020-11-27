@@ -13,6 +13,8 @@ from dataclasses import dataclass, field
 class TestSessionConfig:
     api_environment: Optional[str] = field(default=None)
     service_base_path: Optional[str] = field(default=None)
+    release_id: Optional[str] = field(default=None)
+    commit_id: Optional[str] = field(default=None)
     api_host: str = field(init=False)
     base_uri: str = field(init=False)
 
@@ -21,7 +23,13 @@ class TestSessionConfig:
             object.__setattr__(self, "api_environment", os.environ.get('APIGEE_ENVIRONMENT', 'internal-dev'))
 
         if not self.service_base_path:
-            object.__setattr__(self, "service_base_path", os.environ.get('SERVICE_BASE_PATH', 'sync-wrap-pr-1'))
+            object.__setattr__(self, "service_base_path", os.environ.get('SERVICE_BASE_PATH', 'async-slowapp-pr-2'))
+
+        if not self.release_id:
+            object.__setattr__(self, "release_id", os.environ.get('RELEASE_RELEASEID', 'xxx'))
+
+        if not self.commit_id:
+            object.__setattr__(self, "commit_id", os.environ.get('SOURCE_COMMIT_ID', 'xxx'))
 
         apis_base = 'api.service.nhs.uk'
         api_host = apis_base if self.api_environment == 'prod' else f'{self.api_environment}.{apis_base}'
@@ -54,6 +62,18 @@ class SessionClient:
         uri = self._full_url(url)
         return self.session.get(uri, allow_redirects=allow_redirects, **kwargs)
 
+    def post(self, url: StrOrURL, *, allow_redirects: bool = True, **kwargs: Any) -> "aoihttp._RequestContextManager":
+        uri = self._full_url(url)
+        return self.session.get(uri, allow_redirects=allow_redirects, **kwargs)
+
+    def put(self, url: StrOrURL, *, allow_redirects: bool = True, **kwargs: Any) -> "aoihttp._RequestContextManager":
+        uri = self._full_url(url)
+        return self.session.get(uri, allow_redirects=allow_redirects, **kwargs)
+
+    def delete(self, url: StrOrURL, *, allow_redirects: bool = True, **kwargs: Any) -> "aoihttp._RequestContextManager":
+        uri = self._full_url(url)
+        return self.session.get(uri, allow_redirects=allow_redirects, **kwargs)
+
     async def close(self):
         await self.session.close()
         return self
@@ -65,4 +85,5 @@ class SessionClient:
             exc_tb: Optional[TracebackType],
     ) -> None:
         await self.close()
+
 

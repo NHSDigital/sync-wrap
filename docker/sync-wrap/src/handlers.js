@@ -230,7 +230,11 @@ async function ping(req, res) {
     if ('log' in query) {
         log.info(`/ping?${querystring.stringify(query)}`);
     }
-    res.json({ping: "pong", service: "sync-wrap"});
+    res.json({
+        ping: "pong",
+        service: "sync-wrap",
+        _version: req.app.locals.version_info
+    });
 }
 
 async function env(req, res) { res.json({env: process.env}); }

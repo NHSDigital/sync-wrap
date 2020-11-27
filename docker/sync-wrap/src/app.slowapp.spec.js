@@ -14,7 +14,7 @@ describe("express with slowapp no insecure", function () {
         app.setup({UPSTREAM: "http://localhost:9003", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
         server = app.start();
         let slowapp = require("../../async-slowapp/src/app");
-        slowapp.setup({HOST: "http://localhost:9003", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
+        slowapp.setup({BASE_URI: "http://localhost:9003", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
         slow_server = slowapp.start({PORT: 9003})
     });
 
@@ -34,7 +34,7 @@ describe("express with slowapp no insecure", function () {
     it("responds to /_status", (done) => {
         request(server)
             .get("/_status")
-            .expect(200, {ping: "pong", service: "sync-wrap"})
+            .expect(200, {ping: "pong", service: "sync-wrap", _version: {}})
             .expect("Content-Type", /json/, done);
     });
 
@@ -57,7 +57,7 @@ describe("express with slowap", function () {
         server = app.start();
 
         let slowapp = require("../../async-slowapp/src/app");
-        slowapp.setup({HOST: "http://localhost:9003", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
+        slowapp.setup({BASE_URI: "http://localhost:9003", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
         slow_server = slowapp.start({PORT: 9003})
     });
 
@@ -76,7 +76,7 @@ describe("express with slowap", function () {
     it("responds to /_status", (done) => {
         request(server)
             .get("/_status")
-            .expect(200, {ping: "pong", service: "sync-wrap"})
+            .expect(200, {ping: "pong", service: "sync-wrap", _version: {}})
             .expect("Content-Type", /json/, done);
     });
 
@@ -135,11 +135,15 @@ describe("express with slowap with sub path", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({UPSTREAM: "http://localhost:9003/sub", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
+        app.setup({
+            UPSTREAM: "http://localhost:9003/sub",
+            LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"),
+            VERSION_INFO: "{\"test\": 123}"
+        });
         server = app.start();
 
         let slowapp = require("../../async-slowapp/src/app");
-        slowapp.setup({HOST: "http://localhost:9003/sub", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
+        slowapp.setup({BASE_URI: "http://localhost:9003/sub", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
         slow_server = slowapp.start({PORT: 9003})
     });
 
@@ -158,7 +162,7 @@ describe("express with slowap with sub path", function () {
     it("responds to /_status", (done) => {
         request(server)
             .get("/_status")
-            .expect(200, {ping: "pong", service: "sync-wrap"})
+            .expect(200, {ping: "pong", service: "sync-wrap", _version: {test: 123}})
             .expect("Content-Type", /json/, done);
     });
 
