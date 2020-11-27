@@ -8,6 +8,7 @@ const log = require("loglevel");
 function setup(options) {
     options = options || {};
     app.locals.upstream = new URL(options.UPSTREAM || "http://localhost");
+    app.locals.version_info = JSON.parse(options.VERSION_INFO || '{}')
     app.locals.base_path = app.locals.upstream.pathname === "/" ? "" : app.locals.upstream.pathname;
     log.setLevel(options.LOG_LEVEL || "info");
     log.info("configured with: " + options.UPSTREAM);

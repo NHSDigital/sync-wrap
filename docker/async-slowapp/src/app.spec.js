@@ -17,7 +17,7 @@ describe("express with async-slowapp", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({ LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"), HOST:"https://fakehost.com"});
+        app.setup({ LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"), BASE_URI:"https://fakehost.com"});
         server = app.start({PORT: 9002});
     });
 
@@ -35,7 +35,7 @@ describe("express with async-slowapp", function () {
     it("responds to /_ping", (done) => {
         request(server)
             .get("/_ping")
-            .expect(200, {ping: "pong"})
+            .expect(200, {ping: "pong", service: "async-slowapp"})
             .expect("Content-Type", /json/, done);
     });
 
@@ -87,17 +87,17 @@ describe("express with async-slowapp", function () {
                 await sleep(500);
                 let url = new URL(content_location);
                 request(server)
-                .get(url.pathname + url.search)
-                .set("Cookie", "poll-count=0")
-                .expect(res => {
-                    let headers = res.res.rawHeaders.asMultiValue();
-                    assert.isFalse(headers.has('content-location'));
-                    let cookies = headers.cookies("set-cookie");
-                    assert.isDefined(cookies["poll-count"]);
-                    let poll_count = parseInt(cookies["poll-count"].split(";")[0].split("=")[1]);
-                    assert.equal(poll_count, 1);
-                })
-                .expect(418, done)
+                    .get(url.pathname + url.search)
+                    .set("Cookie", "poll-count=0")
+                    .expect(res => {
+                        let headers = res.res.rawHeaders.asMultiValue();
+                        assert.isFalse(headers.has('content-location'));
+                        let cookies = headers.cookies("set-cookie");
+                        assert.isDefined(cookies["poll-count"]);
+                        let poll_count = parseInt(cookies["poll-count"].split(";")[0].split("=")[1]);
+                        assert.equal(poll_count, 1);
+                    })
+                    .expect(418, done)
             });
     });
 
@@ -112,7 +112,7 @@ describe("express with async-slowapp with /sub", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({ LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"), HOST:"https://fakehost.com/sub"});
+        app.setup({ LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"), BASE_URI:"https://fakehost.com/sub"});
         server = app.start({PORT: 9002});
     });
 
@@ -130,7 +130,7 @@ describe("express with async-slowapp with /sub", function () {
     it("responds to /sub/_ping", (done) => {
         request(server)
             .get("/sub/_ping")
-            .expect(200, {ping: "pong"})
+            .expect(200, {ping: "pong", service: "async-slowapp"})
             .expect("Content-Type", /json/, done);
     });
 
