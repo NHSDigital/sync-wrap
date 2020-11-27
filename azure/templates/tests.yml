@@ -1,24 +1,26 @@
 parameters:
-  - name: service_name
-    type: string
+    - name: service_name
+      type: string
 
 steps:
-  - bash: |
-      make -C e2e install
+    - bash: |
+          make -C e2e install
+      workingDirectory: $(SERVICE_DIR)
+      displayName: Setup e2e tests
 
-    workingDirectory: $(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(SERVICE_ARTIFACT_NAME)
-    displayName: Setup e2e tests
+    - bash: |
+        export RELEASE_RELEASEID=$(Build.BuildId)
+        export SOURCE_COMMIT_ID=$(Build.SourceVersion)
+        export APIGEE_ENVIRONMENT="$(APIGEE_ENVIRONMENT)"
+        export SERVICE_BASE_PATH="$(SERVICE_BASE_PATH)"
+        make -C e2e coverage
 
-  - bash: |
-      APIGEE_ENVIRONMENT="$(APIGEE_ENVIRONMENT)" SERVICE_BASE_PATH="$(SERVICE_BASE_PATH)" \
-      make -C e2e coverage
+      workingDirectory: $(SERVICE_DIR)
+      displayName: 'Run e2e Tests'
 
-    workingDirectory: $(Pipeline.Workspace)/s/${{ parameters.service_name }}/$(SERVICE_ARTIFACT_NAME)
-    displayName: 'Run e2e Tests'
-
-  - task: PublishTestResults@2
-    displayName: 'Publish e2e Test Results'
-    inputs:
-      testResultsFiles: |
-        $(Pipeline.Workspace)/s/$(SERVICE_NAME)/$(SERVICE_ARTIFACT_NAME)/reports/e2e.xml
-      failTaskOnFailedTests: true
+    - task: PublishTestResults@2
+      displayName: 'Publish e2e Test Results'
+      inputs:
+          testResultsFiles: |
+              $(SERVICE_DIR)/reports/e2e.xml
+          failTaskOnFailedTests: true
