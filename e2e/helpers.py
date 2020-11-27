@@ -21,7 +21,7 @@ class TestSessionConfig:
             object.__setattr__(self, "api_environment", os.environ.get('APIGEE_ENVIRONMENT', 'internal-dev'))
 
         if not self.service_base_path:
-            object.__setattr__(self, "service_base_path", os.environ.get('SERVICE_BASE_PATH', 'sync-wrap-pr-1'))
+            object.__setattr__(self, "service_base_path", os.environ.get('SERVICE_BASE_PATH', 'sync-wrap-pr-26'))
 
         apis_base = 'api.service.nhs.uk'
         api_host = apis_base if self.api_environment == 'prod' else f'{self.api_environment}.{apis_base}'
@@ -47,7 +47,7 @@ class SessionClient:
         if parsed.scheme:
             return url
 
-        url = os.path.join(self.base_uri, url)
+        url = os.path.join(self.base_uri, url.lstrip('/'))
         return url
 
     def get(self, url: StrOrURL, *, allow_redirects: bool = True, **kwargs: Any) -> "aoihttp._RequestContextManager":

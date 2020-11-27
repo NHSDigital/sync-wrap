@@ -57,3 +57,18 @@ async def test_api_status_with_service_header(api: SessionClient):
         body = await r.json()
 
         assert body == dict(ping='pong', service='sync-wrap')
+
+
+@pytest.mark.asyncio
+async def test_api_slowapp_slower_than_sync_wait(api: SessionClient):
+
+    async with api.get("async-slowapp/slow?delay=5", headers={'x-sync-wait': '0.25'}) as r:
+        assert r.status == 504
+
+
+@pytest.mark.asyncio
+async def test_api_slowapp_responds_test_final_status(api: SessionClient):
+
+    async with api.get("async-slowapp/slow?final_status=418&complete_in=0.5") as r:
+        assert r.status == 418
+        assert r.reason == "I'm a teapot"
