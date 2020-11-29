@@ -18,7 +18,7 @@ async def test_wait_for_ping(api_client: APISessionClient, api_test_config: APIT
     await poll_until(
         make_request=lambda: api_client.get('_ping'),
         until=_is_complete,
-        timeout=5
+        timeout=60
     )
 
 
@@ -39,7 +39,7 @@ async def test_wait_for_status(api_client: APISessionClient, api_test_config: AP
     await poll_until(
         make_request=lambda: api_client.get('_status'),
         until=_is_complete,
-        timeout=5
+        timeout=60
     )
 
 
