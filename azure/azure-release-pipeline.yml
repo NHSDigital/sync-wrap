@@ -35,15 +35,51 @@ extends:
     product_description: ${{ variables.product_description }}
     apigee_deployments:
       - environment: internal-dev
+        post_deploy:
+          - template: templates/smoketests.yml
+            parameters:
+              service_name: ${{ variables.service_name }}
       - environment: internal-dev-sandbox
+        post_deploy:
+          - template: templates/smoketests.yml
+            parameters:
+              service_name: ${{ variables.service_name }}
       - environment: internal-qa
+        post_deploy:
+          - template: templates/smoketests.yml
+            parameters:
+              service_name: ${{ variables.service_name }}
       - environment: internal-qa-sandbox
+        post_deploy:
+          - template: templates/smoketests.yml
+            parameters:
+              service_name: ${{ variables.service_name }}
       - environment: ref
+        post_deploy:
+          - template: templates/smoketests.yml
+            parameters:
+              service_name: ${{ variables.service_name }}
         depends_on:
           - internal_qa
       - environment: int
+        post_deploy:
+          - template: templates/smoketests.yml
+            parameters:
+              service_name: ${{ variables.service_name }}
         depends_on:
           - internal_qa
       - environment: sandbox
+        post_deploy:
+          - template: templates/smoketests.yml
+            parameters:
+              service_name: ${{ variables.service_name }}
         depends_on:
           - internal_qa
+#       - environment: prod
+#         post_deploy:
+#           - template: templates/smoketests.yml
+#             parameters:
+#               service_name: ${{ variables.service_name }}
+#         depends_on:
+#           - int
+#           - ref
