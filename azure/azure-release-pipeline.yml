@@ -44,3 +44,6 @@ extends:
       - environment: int
         depends_on:
           - internal_qa
+      - environment: sandbox
+        depends_on:
+          - internal_qa
