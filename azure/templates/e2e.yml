@@ -1,6 +1,5 @@
 parameters:
-    - name: service_name
-      type: string
+  - name: test_type
 
 steps:
     - bash: |
@@ -13,14 +12,14 @@ steps:
         export SOURCE_COMMIT_ID=$(Build.SourceVersion)
         export APIGEE_ENVIRONMENT="$(APIGEE_ENVIRONMENT)"
         export SERVICE_BASE_PATH="$(SERVICE_BASE_PATH)"
-        make -C e2e smoketest
+        make -C e2e ${{ parameters.test_type }}
 
       workingDirectory: $(SERVICE_DIR)
-      displayName: 'Run e2e Tests'
+      displayName: 'Run ${{ parameters.test_type } Tests'
 
     - task: PublishTestResults@2
-      displayName: 'Publish e2e Test Results'
+      displayName: 'Publish ${{ parameters.test_type }} Test Results'
       inputs:
           testResultsFiles: |
-              $(SERVICE_DIR)/reports/smoketest.xml
+              $(SERVICE_DIR)/reports/${{ parameters.test_type }}.xml
           failTaskOnFailedTests: true

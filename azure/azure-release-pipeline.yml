@@ -36,50 +36,50 @@ extends:
     apigee_deployments:
       - environment: internal-dev
         post_deploy:
-          - template: templates/smoketests.yml
+          - template: templates/e2e.yml
             parameters:
-              service_name: ${{ variables.service_name }}
+              test_type: e2e
       - environment: internal-dev-sandbox
         post_deploy:
-          - template: templates/smoketests.yml
+          - template: templates/e2e.yml
             parameters:
-              service_name: ${{ variables.service_name }}
+              test_type: smoketest
       - environment: internal-qa
         post_deploy:
-          - template: templates/smoketests.yml
+          - template: templates/e2e.yml
             parameters:
-              service_name: ${{ variables.service_name }}
+              test_type: e2e
       - environment: internal-qa-sandbox
         post_deploy:
-          - template: templates/smoketests.yml
+          - template: templates/e2e.yml
             parameters:
-              service_name: ${{ variables.service_name }}
+              test_type: smoketest
       - environment: ref
         post_deploy:
-          - template: templates/smoketests.yml
+          - template: templates/e2e.yml
             parameters:
-              service_name: ${{ variables.service_name }}
+              test_type: smoketest
         depends_on:
           - internal_qa
       - environment: int
         post_deploy:
-          - template: templates/smoketests.yml
+          - template: templates/e2e.yml
             parameters:
               service_name: ${{ variables.service_name }}
         depends_on:
           - internal_qa
       - environment: sandbox
         post_deploy:
-          - template: templates/smoketests.yml
+          - template: templates/e2e.yml
             parameters:
-              service_name: ${{ variables.service_name }}
+              test_type: smoketest
         depends_on:
           - internal_qa
 #       - environment: prod
 #         post_deploy:
-#           - template: templates/smoketests.yml
+#           - template: templates/e2e.yml
 #             parameters:
-#               service_name: ${{ variables.service_name }}
+#               test_type: smoketest
 #         depends_on:
 #           - int
 #           - ref
