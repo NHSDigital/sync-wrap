@@ -65,7 +65,7 @@ extends:
         post_deploy:
           - template: templates/e2e.yml
             parameters:
-              test_type: ${{ variables.service_name }}
+              test_type: smoketest
         depends_on:
           - internal_qa
       - environment: sandbox
