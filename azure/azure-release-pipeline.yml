@@ -8,7 +8,7 @@ resources:
     - repository: common
       type: github
       name: NHSDigital/api-management-utils
-      ref: refs/heads/mm-apm-1351-aws-build-agents
+      ref: refs/heads/edge
       endpoint: NHSDigital
 
   pipelines:
@@ -35,12 +35,51 @@ extends:
     product_description: ${{ variables.product_description }}
     apigee_deployments:
       - environment: internal-dev
+        post_deploy:
+          - template: templates/e2e.yml
+            parameters:
+              test_type: e2e
       - environment: internal-dev-sandbox
+        post_deploy:
+          - template: templates/e2e.yml
+            parameters:
+              test_type: smoketest
       - environment: internal-qa
+        post_deploy:
+          - template: templates/e2e.yml
+            parameters:
+              test_type: e2e
       - environment: internal-qa-sandbox
+        post_deploy:
+          - template: templates/e2e.yml
+            parameters:
+              test_type: smoketest
       - environment: ref
+        post_deploy:
+          - template: templates/e2e.yml
+            parameters:
+              test_type: smoketest
         depends_on:
           - internal_qa
       - environment: int
+        post_deploy:
+          - template: templates/e2e.yml
+            parameters:
+              service_name: ${{ variables.service_name }}
         depends_on:
           - internal_qa
+      - environment: sandbox
+        post_deploy:
+          - template: templates/e2e.yml
+            parameters:
+              test_type: smoketest
+        depends_on:
+          - internal_qa
+#       - environment: prod
+#         post_deploy:
+#           - template: templates/e2e.yml
+#             parameters:
+#               test_type: smoketest
+#         depends_on:
+#           - int
+#           - ref
