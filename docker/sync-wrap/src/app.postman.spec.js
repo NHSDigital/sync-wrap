@@ -56,7 +56,22 @@ describe("express with postman-echo", function () {
     it("responds to /_status", (done) => {
         request(server)
             .get("/_status")
-            .expect(200, {ping: "pong", service: "sync-wrap", _version: {}})
+            .expect(200, {
+                ping: "pong",
+                service: "sync-wrap",
+                _version: {},
+                agentStatus: {
+                    createSocketCount: 0,
+                    createSocketErrorCount: 0,
+                    closeSocketCount: 0,
+                    errorSocketCount: 0,
+                    timeoutSocketCount: 0,
+                    requestCount: 0,
+                    freeSockets: {},
+                    sockets: {},
+                    requests: {}
+                }
+            })
             .expect("Content-Type", /json/, done);
     });
 
