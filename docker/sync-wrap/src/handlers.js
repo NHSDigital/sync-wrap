@@ -225,16 +225,33 @@ const sleep = (delay) => {
     });
 };
 
+function buildPingResponse(req) {
+    return {
+        ping: "pong",
+        service: "sync-wrap",
+        _version: req.app.locals.version_info
+    };
+}
+
 async function ping(req, res) {
     let query =  Object.assign({}, req.query);
     if ('log' in query) {
         log.info(`/ping?${querystring.stringify(query)}`);
     }
-    res.json({
-        ping: "pong",
-        service: "sync-wrap",
-        _version: req.app.locals.version_info
-    });
+    res.json(buildPingResponse(req));
+}
+
+async function status(req, res) {
+    let query =  Object.assign({}, req.query);
+    if ('log' in query) {
+        log.info(`/status?${querystring.stringify(query)}`);
+    }
+    const response = buildPingResponse(req)
+    let agent = req.app.locals.default_options.agent;
+    if (agent) {
+        response.agentStatus = agent.getCurrentStatus()
+    }
+    res.json(response);
 }
 
 async function env(req, res) { res.json({env: process.env}); }
@@ -398,7 +415,7 @@ async function proxy(proxy_req, proxy_resp) {
         options.timeout = Math.max(remaining_timeout, 50000);
 
 
-        options.sleep = Math.min(2*options.sleep, locals.max_sleep);
+        options.sleep = Math.min(2*options.sleep, 1000*locals.max_sleep);
 
         // todo: should look at using a cookie jar to check expired etc ??
         options.headers.withNewCookies(options.received_cookies, "cookie");
@@ -459,6 +476,7 @@ async function proxy(proxy_req, proxy_resp) {
 
 module.exports = {
     ping: ping,
+    status: status,
     proxy: proxy,
     env: env
 };
