@@ -79,4 +79,4 @@ async def test_api_slowapp_responds_test_final_status(api_client: APISessionClie
 
     async with api_client.get("async-slowapp/slow?final_status=418&complete_in=0.5") as r:
         assert r.status == 418, (r.status, r.reason, (await r.text())[:2000])
-        assert r.reason == "I'm a teapot"
+        assert r.reason == "I'm a Teapot"

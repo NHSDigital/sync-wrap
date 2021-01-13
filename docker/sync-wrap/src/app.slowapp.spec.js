@@ -34,7 +34,22 @@ describe("express with slowapp no insecure", function () {
     it("responds to /_status", (done) => {
         request(server)
             .get("/_status")
-            .expect(200, {ping: "pong", service: "sync-wrap", _version: {}})
+            .expect(200, {
+                ping: "pong",
+                service: "sync-wrap",
+                _version: {},
+                agentStatus: {
+                    createSocketCount: 0,
+                    createSocketErrorCount: 0,
+                    closeSocketCount: 0,
+                    errorSocketCount: 0,
+                    timeoutSocketCount: 0,
+                    requestCount: 0,
+                    freeSockets: {},
+                    sockets: {},
+                    requests: {}
+                }
+            })
             .expect("Content-Type", /json/, done);
     });
 
@@ -76,7 +91,22 @@ describe("express with slowap", function () {
     it("responds to /_status", (done) => {
         request(server)
             .get("/_status")
-            .expect(200, {ping: "pong", service: "sync-wrap", _version: {}})
+            .expect(200, {
+                ping: "pong",
+                service: "sync-wrap",
+                _version: {},
+                agentStatus: {
+                    createSocketCount: 0,
+                    createSocketErrorCount: 0,
+                    closeSocketCount: 0,
+                    errorSocketCount: 0,
+                    timeoutSocketCount: 0,
+                    requestCount: 0,
+                    freeSockets: {},
+                    sockets: {},
+                    requests: {}
+                }
+            })
             .expect("Content-Type", /json/, done);
     });
 
@@ -162,7 +192,22 @@ describe("express with slowap with sub path", function () {
     it("responds to /_status", (done) => {
         request(server)
             .get("/_status")
-            .expect(200, {ping: "pong", service: "sync-wrap", _version: {test: 123}})
+            .expect(200, {
+                ping: "pong",
+                service: "sync-wrap",
+                _version: {test: 123},
+                agentStatus: {
+                    createSocketCount: 0,
+                    createSocketErrorCount: 0,
+                    closeSocketCount: 0,
+                    errorSocketCount: 0,
+                    timeoutSocketCount: 0,
+                    requestCount: 0,
+                    freeSockets: {},
+                    sockets: {},
+                    requests: {}
+                }
+            })
             .expect("Content-Type", /json/, done);
     });
 
