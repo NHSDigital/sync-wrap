@@ -28,10 +28,9 @@ function setup(options) {
 
     if (keepalive) {
         let Agent = https ? require("agentkeepalive").HttpsAgent : require("agentkeepalive");
-
         default_options.agent = new Agent({
-            maxSockets: 100,
-            maxFreeSockets: 10,
+            maxSockets: 1000,
+            maxFreeSockets: 100,
             timeout: 900000, // active socket keepalive for 15 mins ?
             freeSocketTimeout: 30000 // free socket keepalive for 30 seconds
         });
