@@ -40,4 +40,4 @@ extends:
         post_deploy:
           - template: templates/e2e.yml
             parameters:
-              test_type: e2e
+              test_type: smoketest # Change back to e2e after pr deloy test
