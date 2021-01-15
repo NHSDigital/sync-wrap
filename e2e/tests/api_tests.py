@@ -70,13 +70,13 @@ async def test_api_status_with_service_header(api_client: APISessionClient):
 @pytest.mark.asyncio
 async def test_api_slowapp_slower_than_sync_wait(api_client: APISessionClient):
 
-    async with api_client.get("async-slowapp/slow?delay=5", headers={'x-sync-wait': '0.25'}) as r:
-        assert r.status == 504, (r.status, r.reason, (await r.text())[:2000])
+    r = await api_client.get("async-slowapp/slow?delay=5", allow_retries=True, max_retries=5, headers={'x-sync-wait': '0.25'})
+    assert r.status == 504, (r.status, r.reason, (await r.text())[:2000])
 
 
 @pytest.mark.asyncio
 async def test_api_slowapp_responds_test_final_status(api_client: APISessionClient):
 
-    async with api_client.get("async-slowapp/slow?final_status=418&complete_in=0.5") as r:
-        assert r.status == 418, (r.status, r.reason, (await r.text())[:2000])
-        assert r.reason == "I'm a Teapot"
+    r = await api_client.get("async-slowapp/slow?final_status=418&complete_in=0.5", allow_retries=True, max_retries=5,)
+    assert r.status == 418, (r.status, r.reason, (await r.text())[:2000])
+    assert r.reason == "I'm a Teapot"
