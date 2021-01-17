@@ -47,7 +47,7 @@ Object.defineProperty(Array.prototype, "asMultiValue", {
     }
 );
 
-Object.defineProperty(Array.prototype, "printableHeaders", {
+Object.defineProperty(Array.prototype, "logHeaders", {
         enumerable: false,
         configurable: true,
         value: function() {
@@ -57,7 +57,7 @@ Object.defineProperty(Array.prototype, "printableHeaders", {
                 let key = arr[index - 1];
                 lines.push(`${key}: ${val}`);
             });
-            return "\n" + lines.join("\n");
+            return lines
         }
     }
 );
@@ -211,12 +211,31 @@ class MultiValueHeaders {
 
 }
 
-const lazy_debug = (...msg_or_func) => {
-    if (log.getLevel()>1) {
+const lazy_log = (log_level, options = {}) => {
+    if (log.getLevel()>log.levels[log_level.toUpperCase()]) {
         return
     }
-    let msgs = msg_or_func.map(x=> {return typeof x === "function"? x() : x });
-    log.debug(...msgs, "\n");
+    if (typeof options === "function") {
+        options = options()
+    }
+    let log_line = {
+        "level": log_level
+    }
+    if (typeof options === 'object') {
+        log_line["log"] = Object.keys(options).reduce(function(obj, x) {
+            let val = options[x]
+            if (typeof val === "function") {
+                val = val()
+            }
+            obj[x] = val;
+            return obj;
+        }, {});
+    }
+    if (Array.isArray(options)) {
+        log_line["log"] = {log: options.map(x=> {return typeof x === "function"? x() : x })}
+    }
+
+    log[log_level](JSON.stringify(log_line))
 };
 
 const sleep = (delay) => {
@@ -236,7 +255,9 @@ function buildPingResponse(req) {
 async function ping(req, res) {
     let query =  Object.assign({}, req.query);
     if ('log' in query) {
-        log.info(`/ping?${querystring.stringify(query)}`);
+        lazy_log("info", {
+            direction: "client", type: "request", method: req.method, path: req.path
+        });
     }
     res.json(buildPingResponse(req));
 }
@@ -244,7 +265,9 @@ async function ping(req, res) {
 async function status(req, res) {
     let query =  Object.assign({}, req.query);
     if ('log' in query) {
-        log.info(`/status?${querystring.stringify(query)}`);
+        lazy_log("info", {
+            direction: "client", type: "request", method: req.method, path: req.path
+        });
     }
     const response = buildPingResponse(req)
     let agent = req.app.locals.default_options.agent;
@@ -262,14 +285,14 @@ async function proxy(proxy_req, proxy_resp) {
 
     async function send_response(status, headers = undefined, response_stream = undefined) {
 
-        if (log.getLevel()<2) {
-            if (headers === undefined) {
-                lazy_debug("client","response", status, options.method, options.path);
-            }
-            else {
-                lazy_debug("client","response", status, options.method, options.path, ()=>headers.printableHeaders());
-            }
-        }
+        lazy_log("debug", ()=>({
+            direction: "client",
+            type: "response",
+            status: status,
+            method: options.method,
+            path: options.path,
+            headers: headers
+        }));
 
         let debotli = false;
 
@@ -339,9 +362,16 @@ async function proxy(proxy_req, proxy_resp) {
 
     let respond_async = headers.prefer === "respond-async";
 
-
-    log.info("request", proxy_req.method, path, `syncWait=${syncWait}`, "\n");
-    lazy_debug("client","request", proxy_req.method, path, ()=> proxy_req.rawHeaders.printableHeaders());
+    lazy_log("info", {
+        direction: "client", type: "request", method: proxy_req.method, path: path, syncWait: syncWait
+    });
+    lazy_log("debug", ()=> ({
+        direction: "client",
+        type: "request",
+        method: proxy_req.method,
+        path: path,
+        headers: proxy_req.rawHeaders.asMultiValue()
+    }));
 
     let options = Object.assign(
         {
@@ -364,18 +394,37 @@ async function proxy(proxy_req, proxy_resp) {
 
             let request = conn.request(opts);
 
-            lazy_debug("upstream","request", opts.method, opts.path, ()=>opts.headers.printableHeaders());
+            lazy_log("debug", ()=> ({
+                direction: "server",
+                type: "request",
+                method: opts.method,
+                path: opts.path,
+                headers: opts.headers
+            }));
 
             request.on("timeout", () => {
                 let timeout = opts.timeout || 5000;
-                log.warn("upstream", "timeout", opts.method, opts.path,  "timeout",  timeout/1000, "\n");
+                lazy_log("warn", ()=> ({
+                    direction: "server",
+                    type: "timeout",
+                    method: opts.method,
+                    path: opts.path,
+                    timeout: timeout/1000,
+                    headers: opts.headers
+                }));
                 // todo: should we abort the request ???
                 reject({error: "timeout"});
             });
 
             request.on("response", response => {
-                lazy_debug("upstream", "response", response.statusCode, opts.method, opts.path, ()=>response.rawHeaders.printableHeaders());
-
+                lazy_log("debug", ()=> ({
+                    direction: "server",
+                    type: "response",
+                    status: response.statusCode,
+                    method: opts.method,
+                    path: opts.path,
+                    headers: response.rawHeaders.asMultiValue()
+                }));
                 resolve({
                     options: opts,
                     response: response,
@@ -384,7 +433,14 @@ async function proxy(proxy_req, proxy_resp) {
             });
 
             request.on("error", err => {
-                log.error("upstream", "error", opts.method, opts.path, "\n", err);
+                lazy_log("error", ()=> ({
+                    direction: "server",
+                    type: "error",
+                    method: opts.method,
+                    path: opts.path,
+                    headers: opts.headers,
+                    err: err
+                }));
                 reject({error: err, opts: opts})
             });
 
