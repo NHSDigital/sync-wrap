@@ -9,7 +9,7 @@
 
 docker_service_autoscaling_prod:
   service_metric: ALBRequestCountPerTarget
-  target_value: 50
+  target_value: 500
 
 docker_service_autoscaling: "{{ docker_service_autoscaling_prod if APIGEE_ENVIRONMENT in ('ref', 'prod') else dict() }}"
 
