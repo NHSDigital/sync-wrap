@@ -37,18 +37,7 @@ describe("express with slowapp no insecure", function () {
             .expect(200, {
                 ping: "pong",
                 service: "sync-wrap",
-                _version: {},
-                agentStatus: {
-                    createSocketCount: 0,
-                    createSocketErrorCount: 0,
-                    closeSocketCount: 0,
-                    errorSocketCount: 0,
-                    timeoutSocketCount: 0,
-                    requestCount: 0,
-                    freeSockets: {},
-                    sockets: {},
-                    requests: {}
-                }
+                _version: {}
             })
             .expect("Content-Type", /json/, done);
     });
@@ -94,18 +83,7 @@ describe("express with slowap", function () {
             .expect(200, {
                 ping: "pong",
                 service: "sync-wrap",
-                _version: {},
-                agentStatus: {
-                    createSocketCount: 0,
-                    createSocketErrorCount: 0,
-                    closeSocketCount: 0,
-                    errorSocketCount: 0,
-                    timeoutSocketCount: 0,
-                    requestCount: 0,
-                    freeSockets: {},
-                    sockets: {},
-                    requests: {}
-                }
+                _version: {}
             })
             .expect("Content-Type", /json/, done);
     });
@@ -113,14 +91,14 @@ describe("express with slowap", function () {
     it("responds to /sub/_status", (done) => {
         request(server)
             .get("/sub/_status")
-            .expect(200, {ping: "pong", service: "async-slowapp"})
+            .expect(200, {ping: "pong", service: "async-slowapp", _version: {}})
             .expect("Content-Type", /json/, done);
     });
 
     it("responds to /sub/_ping upstream", (done) => {
         request(server)
             .get("/sub/_ping")
-            .expect(200, {ping: "pong", service: "async-slowapp"})
+            .expect(200, {ping: "pong", service: "async-slowapp", _version: {}})
             .expect("Content-Type", /json/, done);
     });
 
@@ -195,18 +173,7 @@ describe("express with slowap with sub path", function () {
             .expect(200, {
                 ping: "pong",
                 service: "sync-wrap",
-                _version: {test: 123},
-                agentStatus: {
-                    createSocketCount: 0,
-                    createSocketErrorCount: 0,
-                    closeSocketCount: 0,
-                    errorSocketCount: 0,
-                    timeoutSocketCount: 0,
-                    requestCount: 0,
-                    freeSockets: {},
-                    sockets: {},
-                    requests: {}
-                }
+                _version: {test: 123}
             })
             .expect("Content-Type", /json/, done);
     });
