@@ -75,11 +75,12 @@ extends:
               test_type: smoketest
         depends_on:
           - internal_qa
-       - environment: prod
-         post_deploy:
-           - template: templates/e2e.yml
-             parameters:
-               test_type: smoketest
-         depends_on:
-           - int
-           - ref
+      - environment: prod
+        post_deploy:
+          - template: templates/e2e.yml
+            parameters:
+              test_type: smoketest
+        depends_on:
+          - int
+          - ref
+  
