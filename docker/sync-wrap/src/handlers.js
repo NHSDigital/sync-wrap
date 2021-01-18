@@ -47,7 +47,7 @@ Object.defineProperty(Array.prototype, "asMultiValue", {
     }
 );
 
-Object.defineProperty(Array.prototype, "printableHeaders", {
+Object.defineProperty(Array.prototype, "logHeaders", {
         enumerable: false,
         configurable: true,
         value: function() {
@@ -57,7 +57,7 @@ Object.defineProperty(Array.prototype, "printableHeaders", {
                 let key = arr[index - 1];
                 lines.push(`${key}: ${val}`);
             });
-            return "\n" + lines.join("\n");
+            return lines
         }
     }
 );
@@ -211,12 +211,34 @@ class MultiValueHeaders {
 
 }
 
-const lazy_debug = (...msg_or_func) => {
-    if (log.getLevel()>1) {
+const lazy_log = (res, log_level, options = {}) => {
+    if (log.getLevel()>log.levels[log_level.toUpperCase()]) {
         return
     }
-    let msgs = msg_or_func.map(x=> {return typeof x === "function"? x() : x });
-    log.debug(...msgs, "\n");
+    if (typeof options === "function") {
+        options = options()
+    }
+    let log_line = {
+        timestamp: Date.now(),
+        level: log_level,
+        correlation_id: res.locals.correlation_id
+    }
+    if (typeof options === 'object') {
+        options = Object.keys(options).reduce(function(obj, x) {
+            let val = options[x]
+            if (typeof val === "function") {
+                val = val()
+            }
+            obj[x] = val;
+            return obj;
+        }, {});
+        log_line = Object.assign(log_line, options)
+    }
+    if (Array.isArray(options)) {
+        log_line["log"] = {log: options.map(x=> {return typeof x === "function"? x() : x })}
+    }
+
+    log[log_level](JSON.stringify(log_line))
 };
 
 const sleep = (delay) => {
@@ -225,128 +247,125 @@ const sleep = (delay) => {
     });
 };
 
-function buildPingResponse(req) {
+function ping_response(req) {
     return {
         ping: "pong",
-        service: "sync-wrap",
+        service: req.app.locals.app_name,
         _version: req.app.locals.version_info
-    };
+    }
 }
 
-async function ping(req, res) {
-    let query =  Object.assign({}, req.query);
-    if ('log' in query) {
-        log.info(`/ping?${querystring.stringify(query)}`);
-    }
-    res.json(buildPingResponse(req));
+async function ping(req, res, next) {
+    res.locals.handled = true;
+    res.json(ping_response(req));
+    res.end();
+    next();
 }
 
-async function status(req, res) {
-    let query =  Object.assign({}, req.query);
-    if ('log' in query) {
-        log.info(`/status?${querystring.stringify(query)}`);
-    }
-    const response = buildPingResponse(req)
-    let agent = req.app.locals.default_options.agent;
-    if (agent) {
-        response.agentStatus = agent.getCurrentStatus()
-    }
+async function status(req, res, next) {
+    res.locals.status = true;
+
+    let response = ping_response(req);
+
+    // response.upstream.name = "self";
+    // to_do check upstream ?
+
     res.json(response);
+    res.end();
+    next();
 }
 
-async function env(req, res) { res.json({env: process.env}); }
 
+async function proxy(req, res, next) {
 
-async function proxy(proxy_req, proxy_resp) {
+    if (res.locals.handled) {
+        // this request will have been handled, but has also match the 'catch all'
+        next();
+        return;
+    }
 
-
-    async function send_response(status, headers = undefined, response_stream = undefined) {
-
-        if (log.getLevel()<2) {
-            if (headers === undefined) {
-                lazy_debug("client","response", status, options.method, options.path);
-            }
-            else {
-                lazy_debug("client","response", status, options.method, options.path, ()=>headers.printableHeaders());
-            }
-        }
+    async function send_response(status, options = {}) {
 
         let debotli = false;
 
-        proxy_resp.status(status);
-        if(headers !== undefined){
+        let error = options.error;
+        let headers = options.headers;
+        let response_stream = options.response;
+
+        res.status(status);
+        if(headers !== undefined && !res.headersSent){
             // apigee doesn't support botli content encoding for some reason, it sets the encoding to gzip
             debotli = locals.unbotli && headers["content-encoding"] === "br";
             if (debotli) {
                 headers["content-encoding"] = "gzip";
                 headers.remove("content-length");
             }
-            proxy_resp.set(headers);
+            res.set(headers);
         }
 
         if (response_stream === undefined) {
-            proxy_resp.end()
+            res.end();
+            next(error);
+            return
+        }
+
+        if (debotli) {
+            await pipeline(response_stream, zlib.createBrotliDecompress(), zlib.createGzip(), res).then(next).catch(next);
         }
         else {
-            if (debotli) {
-                await pipeline(response_stream, zlib.createBrotliDecompress(), zlib.createGzip(), proxy_resp)
-            }
-            else {
-                await pipeline(response_stream, proxy_resp);
-            }
+            await pipeline(response_stream, res).then(next).catch(next);
         }
     }
     
-    let locals = proxy_req.app.locals;
+    let locals = req.app.locals;
 
     let conn = locals.conn;
 
-    let query =  Object.assign({}, proxy_req.query);
+    let query =  Object.assign({}, req.query);
 
     let syncWait = locals.default_syncwait;
 
 
-    let path = query.isEmpty() ? `${locals.base_path}${proxy_req.params[0]}` : `${locals.base_path}${proxy_req.params[0]}?${querystring.stringify(query)}`;
+    let path = query.isEmpty() ? `${locals.base_path}${req.params[0]}` : `${locals.base_path}${req.params[0]}?${querystring.stringify(query)}`;
 
-    let headers = proxy_req.rawHeaders.asMultiValue();
+    let headers = req.rawHeaders.asMultiValue();
 
 
     if (headers.has('X-Sync-Wait')) {
         syncWait = headers.get('X-Sync-Wait');
         if(isNaN(syncWait)){
-            proxy_resp.status(400);
-            proxy_resp.json({
+            res.status(400);
+            res.json({
                 err: "x-sync-wait should be a number between 0.25 and 29"
             });
-            return
+            next();
+            return;
         }
         syncWait = parseFloat(syncWait);
         if (syncWait < 0.25 || syncWait > 29) {
-            proxy_resp.status(400);
-            proxy_resp.json({
+            res.status(400);
+            res.json({
                 err: "x-sync-wait should be a number between 0.25 and 29"
             });
-            return
+            next();
+            return;
         }
         headers.remove('X-Sync-Wait');
     }
 
     delete headers.host;
     // should we hide this ?
-    headers.set("X-Forwarded-For", proxy_req.connection.remoteAddress);
+    headers.set("X-Forwarded-For", req.connection.remoteAddress);
     headers.remove("x-sync-wrapped")
     headers.set("x-sync-wrapped", "true");
 
     let respond_async = headers.prefer === "respond-async";
 
 
-    log.info("request", proxy_req.method, path, `syncWait=${syncWait}`, "\n");
-    lazy_debug("client","request", proxy_req.method, path, ()=> proxy_req.rawHeaders.printableHeaders());
-
     let options = Object.assign(
         {
             path: path,
-            method: proxy_req.method,
+            method: req.method,
             headers: headers,
             timeout: Math.floor(syncWait*1000),
             respond_before: new Date(new Date().getTime() + Math.floor(syncWait*1000)),
@@ -355,27 +374,51 @@ async function proxy(proxy_req, proxy_resp) {
         locals.default_options
     );
 
-
-
-
     async function make_request(opts, request_stream = undefined) {
         // Return new promise
         return new Promise(async (resolve, reject) => {
 
             let request = conn.request(opts);
-
-            lazy_debug("upstream","request", opts.method, opts.path, ()=>opts.headers.printableHeaders());
+            let started_at = Date.now();
+            let url = new URL(`${req.app.locals.upstream}${opts.path}`);
+            let base_log_entry = {
+                upstream: req.app.locals.upstream,
+                correlation_id: res.locals.correlation_id,
+                started: res.locals.started_at,
+                req: {
+                    method: opts.method,
+                    url: opts.path,
+                    path: url.pathname,
+                    query: url.search,
+                    headers: opts.headers
+                }
+            };
 
             request.on("timeout", () => {
+                let finished_at = Date.now();
                 let timeout = opts.timeout || 5000;
-                log.warn("upstream", "timeout", opts.method, opts.path,  "timeout",  timeout/1000, "\n");
+                lazy_log(res,"warn", ()=> (Object.assign({
+                    type: "upstream_timeout",
+                    finished: finished_at,
+                    duration: finished_at - started_at,
+                    timeout: timeout / 1000
+                }, base_log_entry)));
                 // todo: should we abort the request ???
                 reject({error: "timeout"});
             });
 
             request.on("response", response => {
-                lazy_debug("upstream", "response", response.statusCode, opts.method, opts.path, ()=>response.rawHeaders.printableHeaders());
-
+                let finished_at = Date.now();
+                lazy_log(res,"debug", ()=> (Object.assign({
+                    type: "upstream_request",
+                    finished: finished_at,
+                    duration: finished_at - started_at,
+                    res: {
+                        status: response.statusCode,
+                        message: response.statusMessage,
+                        headers: response.rawHeaders.asMultiValue()
+                    }
+                }, base_log_entry)));
                 resolve({
                     options: opts,
                     response: response,
@@ -384,19 +427,24 @@ async function proxy(proxy_req, proxy_resp) {
             });
 
             request.on("error", err => {
-                log.error("upstream", "error", opts.method, opts.path, "\n", err);
+                let finished_at = Date.now();
+                lazy_log(res,"error", ()=> (Object.assign({
+                    type: "upstream_error",
+                    finished: finished_at,
+                    duration: finished_at - started_at,
+                    err: err
+                }, base_log_entry)));
                 reject({error: err, opts: opts})
             });
 
             if (request_stream !== undefined) {
-                await pipeline(proxy_req, request);
+                await pipeline(req, request).catch(reject);
             }
             else {
                 request.end();
             }
         })
     }
-
 
     async function poll_async(options) {
 
@@ -405,7 +453,7 @@ async function proxy(proxy_req, proxy_resp) {
         if (remaining_timeout < 10) {
             let prev_cookies = options.received_cookies.values();
             let timeout_headers = prev_cookies.length === 0 ? undefined : ["set-cookie", prev_cookies];
-            await send_response(504, timeout_headers);
+            await send_response(504, {headers: timeout_headers});
             return
         }
 
@@ -432,22 +480,22 @@ async function proxy(proxy_req, proxy_resp) {
                     await poll_async(outcome.options);
                     return
                 }
-                await send_response(response.statusCode, headers, response);
+                await send_response(response.statusCode, {headers: headers, response: response});
             })
             .catch(async (fin) => {
                 if (fin.error === "timeout") {
                     let response = options.last_response;
                     let headers = options.last_headers.withPreviousCookies(options.received_cookies);
-                    await send_response(response.statusCode, headers, response);
+                    await send_response(response.statusCode, {headers: headers, response: response});
                     return
                 }
                 let prev_cookies = options.received_cookies.values();
                 let headers = prev_cookies.length === 0 ? undefined : ["set-cookie", prev_cookies];
-                await send_response(502, headers);
+                await send_response(502, {headers: headers, error: fin.error});
             });
     }
 
-    await make_request(options, proxy_req)
+    await make_request(options, req)
         .then(async (outcome) => {
             let response = outcome.response;
             let headers = outcome.headers;
@@ -465,18 +513,17 @@ async function proxy(proxy_req, proxy_resp) {
                 await poll_async(poll_options);
                 return
             }
-            await send_response(response.statusCode, headers, response);
+            await send_response(response.statusCode, {headers: headers, response: response});
         })
         .catch(async (fin) => {
-            await send_response(fin.error === "timeout" ? 504 : 502);
+            await send_response(fin.error === "timeout" ? 504 : 502, {headers: headers, error: fin.error});
         });
 
 }
 
 
 module.exports = {
-    ping: ping,
     status: status,
-    proxy: proxy,
-    env: env
+    ping: ping,
+    proxy: proxy
 };

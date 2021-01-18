@@ -20,7 +20,7 @@ describe("express with google upstream and botli decompress", function () {
         let app = require("./app");
         app.setup({
             UPSTREAM: "https://www.google.co.uk",
-            LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"),
+            LOG_LEVEL: "DEBUG",
             UNBOTLI: "true"
         });
         server = app.start();

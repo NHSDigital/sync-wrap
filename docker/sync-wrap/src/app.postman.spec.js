@@ -59,18 +59,7 @@ describe("express with postman-echo", function () {
             .expect(200, {
                 ping: "pong",
                 service: "sync-wrap",
-                _version: {},
-                agentStatus: {
-                    createSocketCount: 0,
-                    createSocketErrorCount: 0,
-                    closeSocketCount: 0,
-                    errorSocketCount: 0,
-                    timeoutSocketCount: 0,
-                    requestCount: 0,
-                    freeSockets: {},
-                    sockets: {},
-                    requests: {}
-                }
+                _version: {}
             })
             .expect("Content-Type", /json/, done);
     });
