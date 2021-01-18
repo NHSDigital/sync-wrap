@@ -57,6 +57,7 @@ describe("express with postman-echo", function () {
         request(server)
             .get("/_status")
             .expect(200, {
+                status: "pass",
                 ping: "pong",
                 service: "sync-wrap",
                 _version: {}

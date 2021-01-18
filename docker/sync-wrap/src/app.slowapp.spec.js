@@ -35,6 +35,7 @@ describe("express with slowapp no insecure", function () {
         request(server)
             .get("/_status")
             .expect(200, {
+                status: "pass",
                 ping: "pong",
                 service: "sync-wrap",
                 _version: {}
@@ -81,6 +82,7 @@ describe("express with slowap", function () {
         request(server)
             .get("/_status")
             .expect(200, {
+                status: "pass",
                 ping: "pong",
                 service: "sync-wrap",
                 _version: {}
@@ -171,6 +173,7 @@ describe("express with slowap with sub path", function () {
         request(server)
             .get("/_status")
             .expect(200, {
+                status: "pass",
                 ping: "pong",
                 service: "sync-wrap",
                 _version: {test: 123}
