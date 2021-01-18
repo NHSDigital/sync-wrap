@@ -12,4 +12,4 @@ RUN chmod -R a+x /app
 USER nobody
 
 #EXPOSE 9000
-CMD ["node", "--max-semi-space-size=64", "--max-heap-size=448", "main.js"]
+CMD ["node", "--max-semi-space-size=64", "--max_old_space_size=256", "--trace-gc", "main.js"]
