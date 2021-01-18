@@ -249,6 +249,7 @@ const sleep = (delay) => {
 
 function ping_response(req) {
     return {
+        status: "pass",
         ping: "pong",
         service: req.app.locals.app_name,
         _version: req.app.locals.version_info
