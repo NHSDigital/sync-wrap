@@ -2,9 +2,10 @@
 
 const log = require("loglevel");
 const querystring = require("querystring");
-const util = require("util");
 const stream = require("stream");
-const pipeline = util.promisify(stream.pipeline);
+const { promisify } = require('util')
+const pipeline = promisify(stream.pipeline);
+const sleep = promisify(setTimeout)
 const zlib = require("zlib");
 
 
@@ -241,11 +242,7 @@ const lazy_log = (res, log_level, options = {}) => {
     log[log_level](JSON.stringify(log_line))
 };
 
-const sleep = (delay) => {
-    return new Promise(resolve => {
-        setTimeout(resolve, delay)
-    });
-};
+
 
 function ping_response(req) {
     return {
@@ -264,7 +261,7 @@ async function ping(req, res, next) {
 }
 
 async function status(req, res, next) {
-    res.locals.status = true;
+    res.locals.handled = true;
 
     let response = ping_response(req);
 
