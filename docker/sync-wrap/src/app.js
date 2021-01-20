@@ -8,7 +8,7 @@ const uuid = require('uuid');
 function setup(options) {
     options = options || {};
     app.locals.app_name = options.APP_NAME || 'sync-wrap';
-    app.locals.upstream = new URL(options.UPSTREAM || "http://localhost");
+    app.locals.upstream = new URL(options.UPSTREAM || "http://localhost:9003");
     app.locals.version_info = JSON.parse(options.VERSION_INFO || '{}');
     app.locals.base_path = app.locals.upstream.pathname === "/" ? "" : app.locals.upstream.pathname;
     log.setLevel(options.LOG_LEVEL || "info");
@@ -16,32 +16,21 @@ function setup(options) {
     app.locals.unbotli = (options.UNBOTLI || "false") === "true";
     app.locals.max_sleep = parseFloat(options.MAX_SLEEP || 5);
     app.locals.default_syncwait = parseFloat(options.DEFAULT_SYNCWAIT || 5);
-    let keepalive = (options.KEEPALIVE || "true") === "true";
 
     let https = app.locals.upstream.protocol === "https:";
 
+    app.locals.conn = https ? require("https") : require("http");
 
     let default_options = {
         host: app.locals.upstream.hostname,
         port: app.locals.upstream.port
     };
 
-    if (keepalive) {
-        let Agent = https ? require("agentkeepalive").HttpsAgent : require("agentkeepalive");
-        default_options.agent = new Agent({
-            maxSockets: 1000,
-            maxFreeSockets: 100,
-            timeout: 900000, // active socket keepalive for 15 mins ?
-            freeSocketTimeout: 30000 // free socket keepalive for 30 seconds
-        });
-    }
-
     if (app.locals.allow_insecure) {
         default_options.rejectUnauthorized = false;
     }
 
     app.locals.default_options = default_options;
-    app.locals.conn = https ? require("https") : require("http");
 
     log.info(JSON.stringify({
         timestamp: Date.now(),
@@ -108,11 +97,6 @@ function after_request(req, res, next) {
         },
         version: app.locals.version_info
     };
-
-    if (req.path === "/_status") {
-        let agent = req.app.locals.default_options.agent;
-        log_entry.agent_status = agent.getCurrentStatus();
-    }
 
     if (log.getLevel()<2) {
         // debug
