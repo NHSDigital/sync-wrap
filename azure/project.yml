@@ -1,4 +1,4 @@
 variables:
   service_name: sync-wrap
-  service_base_path: sync-wrap
+  service_base_path: zinc-wrap
   short_service_name: sync-wrap
