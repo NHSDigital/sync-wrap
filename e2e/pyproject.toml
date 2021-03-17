@@ -1,9 +1,16 @@
+[project]
+python = "^3.8"
+
 [tool.poetry]
 name = "async-slowapp-e2e"
 version = "0.1.0"
 description = ""
 authors = ["Matthew Mercer <matt.mercer@nhs.net>"]
+readme = 'README.md'
 license = "MIT"
+repository = "https://github.com/NHSDigital/sync-wrap"
+homepage = ""
+keywords = ["nhs"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
