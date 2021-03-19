@@ -5,10 +5,26 @@ const app = express();
 const log = require("loglevel");
 const uuid = require('uuid');
 
+
+function stripchars(str, chars) {
+    var start = 0,  end = str.length;
+
+    while(start < end && chars.indexOf(str[start]) >= 0)
+        ++start;
+
+    while(end > start && chars.indexOf(str[end - 1]) >= 0)
+        --end;
+
+    return (start > 0 || end < str.length) ? str.substring(start, end) : str;
+}
+
+
 function setup(options) {
     options = options || {};
     app.locals.app_name = options.APP_NAME || 'sync-wrap';
-    app.locals.upstream = new URL(options.UPSTREAM || "http://localhost:9003");
+    let upstream = stripchars(options.UPSTREAM || 'http://localhost:9003', ': /');
+    upstream = upstream.startsWith('http') ? upstream : `https://${upstream}`
+    app.locals.upstream = new URL(upstream);
     app.locals.version_info = JSON.parse(options.VERSION_INFO || '{}');
     app.locals.base_path = app.locals.upstream.pathname === "/" ? "" : app.locals.upstream.pathname;
     log.setLevel(options.LOG_LEVEL || "info");

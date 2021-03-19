@@ -10,7 +10,11 @@ describe("express with fake domain", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({UPSTREAM: "https://localhost:1234", ALLOW_INSECURE: "true", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
+        app.setup({
+            UPSTREAM: "localhost:1234",
+            ALLOW_INSECURE: "true",
+            LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")
+        });
         server = app.start();
     });
 
@@ -38,7 +42,10 @@ describe("express with postman-echo", function () {
     before(function () {
         env = process.env;
         let app = require("./app");
-        app.setup({UPSTREAM: "https://postman-echo.com", LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")});
+        app.setup({
+            UPSTREAM: "postman-echo.com",
+            LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug")
+        });
         server = app.start();
     });
     

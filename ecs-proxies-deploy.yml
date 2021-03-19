@@ -22,10 +22,11 @@ docker_service:
         value: production
       - name: LOG_LEVEL
         value: "{{ 'debug' if APIGEE_ENVIRONMENT == 'internal-dev' else 'info' }}"
-      - name: UPSTREAM
-        value: "{{ apigee_uri }}"
       - name: VERSION_INFO
         value: "{{ version_info | to_json }}"
+    secrets:
+      - name: UPSTREAM
+        valueFrom: "/{{ account }}/platform-common/egress/hosts/apigee-{{ APIGEE_ENVIRONMENT }}"
     health_check:
       matcher: "200"
       path: "/_ping"
