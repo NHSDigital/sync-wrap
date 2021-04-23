@@ -262,7 +262,7 @@ async function delete_poll(req, res, next) {
     respond(req, res, next, 200);
 }
 
-
+let poll_counter = 0;
 async function poll(req, res, next) {
 
     let poll_id = req.query.id;
@@ -273,7 +273,7 @@ async function poll(req, res, next) {
     let poll_count = cookies['poll-count'];
 
     if (poll_count !== undefined) {
-        poll_count = (parseInt(poll_count.split('=')[1]) + 1).toString();
+        poll_counter++
     }
 
     if (!(poll_id in locals.tracked)) {
@@ -291,7 +291,7 @@ async function poll(req, res, next) {
     let resp_headers = new MultiValueHeaders();
 
     if (poll_count !== undefined) {
-        resp_headers.withNewCookies({"poll-count": `poll-count=${poll_count}`}, 'set-cookie');
+        resp_headers.withNewCookies({"poll-count": `poll-count=${poll_counter}`}, 'set-cookie');
     }
 
     delete locals.tracked[poll_id];
