@@ -471,7 +471,7 @@ async function proxy(req, res, next) {
             .then(async (outcome) => {
                 let response = outcome.response;
                 let headers = outcome.headers.withPreviousCookies(outcome.options.received_cookies);
-                if (outcome.response.statusCode === 202 && headers.has("content-location")) {
+                if (outcome.response.statusCode === 202) {
                     outcome.options.last_response = response;
                     outcome.options.last_headers = headers;
                     outcome.options.received_cookies = headers.cookies("set-cookie");
