@@ -514,8 +514,7 @@ async function proxy(req, res, next) {
             await send_response(response.statusCode, {headers: headers, response: response});
         })
         .catch(async (fin) => {
-            const error = fin.error ? fin.error : fin;
-            await send_response(fin.error === "timeout" ? 504 : 502, {headers: headers, error});
+            await send_response(fin.error === "timeout" ? 504 : 502, {headers: headers, error: fin.error || error});
         });
 
 }
