@@ -471,7 +471,11 @@ async function proxy(req, res, next) {
             .then(async (outcome) => {
                 let response = outcome.response;
                 let headers = outcome.headers.withPreviousCookies(outcome.options.received_cookies);
-                if (outcome.response.statusCode === 202 && headers.has("content-location")) {
+                if (outcome.response.statusCode === 202) {
+                    if (headers.has('content-location')) {
+                        let poll_location = new URL(headers.get("content-location"));
+                        outcome.options.path = poll_location.pathname + poll_location.search;
+                    }
                     outcome.options.last_response = response;
                     outcome.options.last_headers = headers;
                     outcome.options.received_cookies = headers.cookies("set-cookie");
@@ -514,7 +518,7 @@ async function proxy(req, res, next) {
             await send_response(response.statusCode, {headers: headers, response: response});
         })
         .catch(async (fin) => {
-            await send_response(fin.error === "timeout" ? 504 : 502, {headers: headers, error: fin.error});
+            await send_response(fin.error === "timeout" ? 504 : 502, {headers: headers, error: fin.error || fin});
         });
 
 }

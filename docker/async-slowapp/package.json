@@ -4,7 +4,8 @@
   "main": "src/main.js",
   "scripts": {
     "start": "node src/main.js --use_strict",
-    "debug": "nodemon --inspect src/main.js"
+    "debug": "nodemon --inspect src/main.js",
+    "test": "mocha ./src/*.spec.js"
   },
   "author": "",
   "license": "",

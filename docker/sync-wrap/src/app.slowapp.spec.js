@@ -134,6 +134,31 @@ describe("express with slowap", function () {
             .expect(504, done);
     }).timeout(10000);
 
+    it("GET /slow, completes multiple polling cycles ", (done) => {
+        request(server)
+            .get(`/slow?final_status=200&complete_in=3`)
+            .set("x-sync-wait", "5")
+            .expect(200)
+            .then(({ headers }) => {
+                const pollCount = parseInt(headers["set-cookie"][0].split("=")[1]);
+                assert.isAbove(pollCount, 1);
+                done();
+            })
+    }).timeout(10000);
+
+
+    it("GET /slow?nocl=1, don't set content location on poll", (done) => {
+        request(server)
+            .get(`/slow?final_status=200&complete_in=3&nocl=1`)
+            .set("x-sync-wait", "5")
+            .expect(200)
+            .then(({ headers }) => {
+                const pollCount = parseInt(headers["set-cookie"][0].split("=")[1]);
+                assert.isAbove(pollCount, 1);
+                done();
+            })
+    }).timeout(10000);
+
 });
 
 
@@ -210,6 +235,18 @@ describe("express with slowap with sub path", function () {
             .set("x-sync-wait", "1")
             .expect(504, done);
     }).timeout(10000);
+
+    it("GET /slow, completes multiple polling cycles ", (done) => {
+        request(server)
+            .get(`/slow?final_status=200&complete_in=3`)
+            .set("x-sync-wait", "5")
+            .expect(200)
+            .then(({ headers }) => {
+                const pollCount = parseInt(headers["set-cookie"][0].split("=")[1]);
+                assert.isAbove(pollCount, 1)
+                done();
+            })
+    }).timeout(10000)
 
     // it("slowapp patch request", (done) => {
     //     request(server)

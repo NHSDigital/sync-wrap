@@ -221,6 +221,8 @@ async function slow(req, res, next) {
 
     let delay = req.query.delay;
 
+    let nocl = req.query.nocl;
+
     if (delay !== undefined) {
         delay = parseFloat(delay);
         await sleep(delay*1000);
@@ -236,6 +238,10 @@ async function slow(req, res, next) {
     locals.tracked[poll_id] = {finish_at: finish_at, final_status: parseInt(final_status)};
 
     let location = `${locals.base_uri}/poll?id=${poll_id}`;
+
+    if (nocl === '1') {
+        location = `${location}&nocl=1`;
+    }
 
     let headers = new MultiValueHeaders([
         "Content-Type", "application/json",
@@ -266,6 +272,7 @@ async function delete_poll(req, res, next) {
 async function poll(req, res, next) {
 
     let poll_id = req.query.id;
+    let nocl = req.query.nocl;
     let headers = req.rawHeaders.asMultiValue();
     let cookies = headers.cookies('cookie');
     let locals = req.app.locals;
@@ -283,16 +290,24 @@ async function poll(req, res, next) {
 
     let tracking = locals.tracked[poll_id];
 
-    if (new Date() < tracking.finish_at) {
-        respond(req, res, next, 202, new MultiValueHeaders(['Content-Location', `${locals.base_uri}/poll?id=${poll_id}`]));
-        return;
-    }
 
     let resp_headers = new MultiValueHeaders();
 
     if (poll_count !== undefined) {
         resp_headers.withNewCookies({"poll-count": `poll-count=${poll_count}`}, 'set-cookie');
     }
+
+
+    if (new Date() < tracking.finish_at) {
+
+        if (nocl !== '1') {
+            resp_headers.set('Content-Location', `${locals.base_uri}/poll?id=${poll_id}`)
+        }
+        respond(req, res, next, 202, resp_headers);
+        return;
+    }
+
+
 
     delete locals.tracked[poll_id];
 
