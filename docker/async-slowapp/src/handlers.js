@@ -210,7 +210,7 @@ async function ping(req, res, next) {
     res.json({
         ping: "pong",
         service: req.app.locals.app_name,
-        _version: req.app.locals.version_info
+        version: req.app.locals.version_info
     });
     next();
 }

@@ -28,6 +28,28 @@ extends:
   parameters:
     service_name: ${{ variables.service_name }}
     short_service_name: ${{ variables.short_service_name }}
+    cache_steps:
+      - task: s3-cache-action@1
+        inputs:
+          key: 'node modules | ${{ variables.service_name }}/docker/async-slowapp/package-lock.json'
+          location: '${{ variables.service_name }}/docker/async-slowapp/node_modules'
+          debug: true
+          alias: "node-async-slowapp"
+        displayName: cache  async-slowapp node modules
+      - task: s3-cache-action@1
+        inputs:
+          key: 'node modules | ${{ variables.service_name }}/docker/sync-wrap/package-lock.json'
+          location: '${{ variables.service_name }}/docker/sync-wrap/node_modules'
+          alias: "node-sync-wrap"
+          debug: true
+        displayName: cache sync-wrap node modules
+      - task: s3-cache-action@1
+        inputs:
+          key: 'poetry | ${{ variables.service_name }}/poetry.lock'
+          location: '${{ variables.service_name }}/.venv'
+          alias: "py-sync-wrap"
+          debug: true
+        displayName: cache python dependencies
     test_steps:
       - bash: "make test-report"
         displayName: run tests

@@ -17,9 +17,6 @@ guard-%:
 		exit 1; \
 	fi
 
-install:
-	poetry install
-
 
 test:
 	$(activate) pytest

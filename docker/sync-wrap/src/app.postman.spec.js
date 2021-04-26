@@ -67,7 +67,7 @@ describe("express with postman-echo", function () {
                 status: "pass",
                 ping: "pong",
                 service: "sync-wrap",
-                _version: {}
+                version: {}
             })
             .expect("Content-Type", /json/, done);
     });

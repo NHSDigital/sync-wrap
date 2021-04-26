@@ -249,7 +249,7 @@ function ping_response(req) {
         status: "pass",
         ping: "pong",
         service: req.app.locals.app_name,
-        _version: req.app.locals.version_info
+        version: req.app.locals.version_info
     }
 }
 
@@ -458,7 +458,7 @@ async function proxy(req, res, next) {
         await sleep(Math.min(options.sleep, remaining_timeout));
 
         remaining_timeout = options.respond_before.getTime() - (new Date()).getTime();
-        options.timeout = Math.max(remaining_timeout, 50000);
+        options.timeout = Math.max(remaining_timeout, 5000);
 
 
         options.sleep = Math.min(2*options.sleep, 1000*locals.max_sleep);
