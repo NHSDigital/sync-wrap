@@ -38,7 +38,7 @@ describe("express with slowapp no insecure", function () {
                 status: "pass",
                 ping: "pong",
                 service: "sync-wrap",
-                _version: {}
+                version: {}
             })
             .expect("Content-Type", /json/, done);
     });
@@ -85,7 +85,7 @@ describe("express with slowap", function () {
                 status: "pass",
                 ping: "pong",
                 service: "sync-wrap",
-                _version: {}
+                version: {}
             })
             .expect("Content-Type", /json/, done);
     });
@@ -93,14 +93,14 @@ describe("express with slowap", function () {
     it("responds to /sub/_status", (done) => {
         request(server)
             .get("/sub/_status")
-            .expect(200, {ping: "pong", service: "async-slowapp", _version: {}})
+            .expect(200, {ping: "pong", service: "async-slowapp", version: {}})
             .expect("Content-Type", /json/, done);
     });
 
     it("responds to /sub/_ping upstream", (done) => {
         request(server)
             .get("/sub/_ping")
-            .expect(200, {ping: "pong", service: "async-slowapp", _version: {}})
+            .expect(200, {ping: "pong", service: "async-slowapp", version: {}})
             .expect("Content-Type", /json/, done);
     });
 
@@ -201,7 +201,7 @@ describe("express with slowap with sub path", function () {
                 status: "pass",
                 ping: "pong",
                 service: "sync-wrap",
-                _version: {test: 123}
+                version: {test: 123}
             })
             .expect("Content-Type", /json/, done);
     });

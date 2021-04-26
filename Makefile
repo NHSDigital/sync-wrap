@@ -27,11 +27,14 @@ clean: clean-build clean-dist clean-reports
 	done; \
 	wait
 
-install:
+install: install-python
 	@for dir in $(modules); do \
 		make --no-print-directory -C docker/$${dir} install & \
 	done; \
 	wait
+
+install-python:
+	poetry install
 
 update:
 	@for dir in $(modules); do \
@@ -50,6 +53,7 @@ clean-dist:
 clean-reports:
 	rm -rf ./reports || true
 
+
 build: clean-build
 	@for dir in $(modules); do \
 		make --no-print-directory -C docker/$${dir} build & \
@@ -61,13 +65,14 @@ build: clean-build
 
 build-proxy: build
 
+_dist_include="pytest.ini poetry.lock poetry.toml pyproject.toml Makefile build/. e2e"
+
 dist: clean-dist build
-	mkdir -p dist/proxies
-	cp -R build/. dist/proxies
-	cp -R e2e/. dist/e2e
-#	cp -R utils dist
-#	rm -rf dist/utils/.git
+	mkdir -p dist
+	for f in $(_dist_include); do cp -r $$f dist; done
 	cp ecs-proxies-deploy.yml dist/ecs-deploy-all.yml
+
+release: dist
 
 test: clean-reports
 	@for dir in $(modules); do \
@@ -96,4 +101,4 @@ pass:
 check-licenses: pass
 publish: pass
 
-release: dist
+

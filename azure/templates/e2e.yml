@@ -2,8 +2,17 @@ parameters:
   - name: test_type
 
 steps:
+
+    - task: s3-cache-action@1
+      inputs:
+        key: 'poetry | $(SERVICE_DIR)/poetry.lock'
+        location: '$(SERVICE_DIR)/.venv'
+        debug: true
+        alias: "py-sync-wrap"
+      displayName: cache python dependencies
+
     - bash: |
-          make -C e2e install
+          make install-python
       workingDirectory: $(SERVICE_DIR)
       displayName: Setup e2e tests
 
@@ -12,6 +21,7 @@ steps:
         export SOURCE_COMMIT_ID=$(Build.SourceVersion)
         export APIGEE_ENVIRONMENT="$(APIGEE_ENVIRONMENT)"
         export SERVICE_BASE_PATH="$(SERVICE_BASE_PATH)"
+        export STATUS_ENDPOINT_API_KEY="$(status-endpoint-api-key)"
         make -C e2e ${{ parameters.test_type }}
 
       workingDirectory: $(SERVICE_DIR)
