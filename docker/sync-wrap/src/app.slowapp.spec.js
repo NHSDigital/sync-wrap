@@ -144,7 +144,21 @@ describe("express with slowap", function () {
                 assert.isAbove(pollCount, 1);
                 done();
             })
-    }).timeout(10000)
+    }).timeout(10000);
+
+
+    it("GET /slow?nocl=1, don't set content location on poll", (done) => {
+        request(server)
+            .get(`/slow?final_status=200&complete_in=3&nocl=1`)
+            .set("x-sync-wait", "5")
+            .expect(200)
+            .then(({ headers }) => {
+                const pollCount = parseInt(headers["set-cookie"][0].split("=")[1]);
+                assert.isAbove(pollCount, 1);
+                done();
+            })
+    }).timeout(10000);
+
 });
 
 
