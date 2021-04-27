@@ -458,7 +458,7 @@ async function proxy(req, res, next) {
         await sleep(Math.min(options.sleep, remaining_timeout));
 
         remaining_timeout = options.respond_before.getTime() - (new Date()).getTime();
-        options.timeout = Math.max(remaining_timeout, 5000);
+        options.timeout = Math.max(remaining_timeout, 50000);
 
 
         options.sleep = Math.min(2*options.sleep, 1000*locals.max_sleep);
@@ -493,7 +493,7 @@ async function proxy(req, res, next) {
                 }
                 let prev_cookies = options.received_cookies.values();
                 let headers = prev_cookies.length === 0 ? undefined : ["set-cookie", prev_cookies];
-                await send_response(502, {headers: headers, error: fin.error});
+                await send_response(502, {headers: headers, error: fin.error || fin});
             });
     }
 
