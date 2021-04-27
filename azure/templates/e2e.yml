@@ -8,7 +8,6 @@ steps:
         key: 'poetry | $(SERVICE_DIR)/poetry.lock'
         location: '$(SERVICE_DIR)/.venv'
         debug: true
-        alias: "py-sync-wrap"
       displayName: cache python dependencies
 
     - bash: |
