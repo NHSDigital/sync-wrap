@@ -109,6 +109,21 @@ describe("express with slowap", function () {
             .get("/slow?delay=5")
             .set("x-sync-wait", "0.25")
             .set("Accept", "application/json")
+            .expect(res => {
+                assert.equal(res.header['content-length'], "0");
+            })
+            .expect(504, done);
+    }).timeout(10000);
+
+    it("when posting it times out if x-sync-wait shorter than initial response", (done) => {
+        request(server)
+            .post("/slow?delay=5")
+            .send({test: 'data'})
+            .set("x-sync-wait", "0.25")
+            .set("Accept", "application/json")
+            .expect(res => {
+                assert.equal(res.header['content-length'], "0");
+            })
             .expect(504, done);
     }).timeout(10000);
 

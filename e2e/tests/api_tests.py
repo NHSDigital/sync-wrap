@@ -65,8 +65,9 @@ async def test_wait_for_status(
             return False
 
         backend = dict_path(body, ["checks", "healthcheck", "outcome", "version"])
-        if not backend:
-            return True
+    
+        if type(backend) != dict:
+            return False
 
         return backend.get("commitId") == api_test_config.commit_id
 
