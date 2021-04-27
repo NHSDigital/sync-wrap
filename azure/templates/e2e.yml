@@ -5,15 +5,18 @@ steps:
 
     - task: s3-cache-action@1
       inputs:
-        key: 'poetry | $(SERVICE_DIR)/poetry.lock'
-        location: '$(SERVICE_DIR)/.venv'
+        key: 'poetry | ./poetry.lock'
+        location: '.venv'
         debug: true
+        workingDirectory: $(SERVICE_DIR)
+      name: poetryCache
       displayName: cache python dependencies
 
     - bash: |
           make install-python
       workingDirectory: $(SERVICE_DIR)
-      displayName: Setup e2e tests
+      condition: ne(variables['poetryCache.cacheRestored'], 'true')
+      displayName: poetry install
 
     - bash: |
         export RELEASE_RELEASEID=$(Build.BuildId)
@@ -24,10 +27,10 @@ steps:
         make -C e2e ${{ parameters.test_type }}
 
       workingDirectory: $(SERVICE_DIR)
-      displayName: 'Run ${{ parameters.test_type }} Tests'
+      displayName: run ${{ parameters.test_type }} tests
 
     - task: PublishTestResults@2
-      displayName: 'Publish ${{ parameters.test_type }} Test Results'
+      displayName: publish ${{ parameters.test_type }} test results
       inputs:
           testResultsFiles: |
               $(SERVICE_DIR)/reports/${{ parameters.test_type }}.xml

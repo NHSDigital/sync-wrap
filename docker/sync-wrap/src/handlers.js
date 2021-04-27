@@ -519,7 +519,7 @@ async function proxy(req, res, next) {
             await send_response(response.statusCode, {headers: headers, response: response});
         })
         .catch(async (fin) => {
-            await send_response(fin.error === "timeout" ? 504 : 502, {headers: undefined, error: fin.error || fin});
+            await send_response(fin.error === "timeout" ? 504 : 502, { error: fin.error || fin });
         });
 
 }

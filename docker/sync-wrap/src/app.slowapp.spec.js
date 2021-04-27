@@ -81,6 +81,9 @@ describe("express with slowap", function () {
     it("responds to /_status", (done) => {
         request(server)
             .get("/_status")
+            .expect(res => {
+                assert.isUndefined(res.header['x-powered-by']);
+            })
             .expect(200, {
                 status: "pass",
                 ping: "pong",
@@ -122,6 +125,19 @@ describe("express with slowap", function () {
             .set("x-sync-wait", "0.25")
             .set("Accept", "application/json")
             .expect(res => {
+                assert.equal(res.header['content-length'], "0");
+            })
+            .expect(504, done);
+    }).timeout(10000);
+
+    it("when patching it times out if x-sync-wait shorter than initial response", (done) => {
+        request(server)
+            .patch("/slow?delay=5")
+            .send({test: 'data'})
+            .set("x-sync-wait", "0.25")
+            .set("Accept", "application/json")
+            .expect(res => {
+                assert.isUndefined(res.header['x-powered-by']);
                 assert.equal(res.header['content-length'], "0");
             })
             .expect(504, done);
