@@ -302,6 +302,7 @@ async function proxy(req, res, next) {
         }
 
         if (response_stream === undefined) {
+            res.set('content-length', 0)
             res.end();
             next(error);
             return
@@ -518,7 +519,7 @@ async function proxy(req, res, next) {
             await send_response(response.statusCode, {headers: headers, response: response});
         })
         .catch(async (fin) => {
-            await send_response(fin.error === "timeout" ? 504 : 502, {headers: headers, error: fin.error || fin});
+            await send_response(fin.error === "timeout" ? 504 : 502, {headers: undefined, error: fin.error || fin});
         });
 
 }
