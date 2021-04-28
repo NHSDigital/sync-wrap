@@ -31,21 +31,24 @@ extends:
     cache_steps:
       - task: s3-cache-action@1
         inputs:
-          key: 'node modules | ${{ variables.service_name }}/docker/async-slowapp/package-lock.json'
-          location: '${{ variables.service_name }}/docker/async-slowapp/node_modules'
+          key: 'node modules | ./docker/async-slowapp/package-lock.json'
+          location: './docker/async-slowapp/node_modules'
           debug: true
+          workingDirectory: '${{ variables.service_name }}'
         displayName: cache async-slowapp node modules
       - task: s3-cache-action@1
         inputs:
-          key: 'node modules | ${{ variables.service_name }}/docker/sync-wrap/package-lock.json'
-          location: '${{ variables.service_name }}/docker/sync-wrap/node_modules'
+          key: 'node modules | ./docker/sync-wrap/package-lock.json'
+          location: './docker/sync-wrap/node_modules'
           debug: true
+          workingDirectory: '${{ variables.service_name }}'
         displayName: cache sync-wrap node modules
       - task: s3-cache-action@1
         inputs:
-          key: 'poetry | ${{ variables.service_name }}/poetry.lock'
-          location: '${{ variables.service_name }}/.venv'
+          key: 'poetry | ./poetry.lock'
+          location: './.venv'
           debug: true
+          workingDirectory: '${{ variables.service_name }}'
         displayName: cache python dependencies
     test_steps:
       - bash: "make test-report"
@@ -54,6 +57,6 @@ extends:
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: "JUnit"
-          testResultsFiles: "${{ variables.service_name }}/reports/tests/*.xml"
+          testResultsFiles: "./reports/tests/*.xml"
           failTaskOnFailedTests: true
         displayName: publish test report

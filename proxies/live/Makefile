@@ -10,7 +10,7 @@ build:
 	cp -r ./apiproxy ../../build/proxies/$(dirname)
 
 deploy: build
-	cd ../../build/$(dirname) && apigeetool deployproxy -V -o nhsd-nonprod -e internal-dev -n sync-wrap-local -t $$(get_token)
+	cd ../../build/proxies/$(dirname) && apigeetool deployproxy -V -o nhsd-nonprod -e internal-dev -n sync-wrap-local -t $$(get_token)
 
 undeploy:
 	apigeetool undeploy -V -o nhsd-nonprod -e internal-dev -n sync-wrap-local -t $$(get_token)

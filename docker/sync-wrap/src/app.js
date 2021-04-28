@@ -36,7 +36,7 @@ function setup(options) {
     let https = app.locals.upstream.protocol === "https:";
 
     app.locals.conn = https ? require("https") : require("http");
-
+    app.disable('x-powered-by');
     let default_options = {
         host: app.locals.upstream.hostname,
         port: app.locals.upstream.port
@@ -117,7 +117,7 @@ function after_request(req, res, next) {
     if (log.getLevel()<2) {
         // debug
         log_entry.req.headers = (req.rawHeaders || []).asMultiValue();
-        log_entry.res.headers = (res.rawHeaders || []).asMultiValue();
+        log_entry.res.headers = res.getHeaders();
     }
     log.info(JSON.stringify(log_entry));
 
