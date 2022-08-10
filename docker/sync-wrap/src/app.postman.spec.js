@@ -163,7 +163,7 @@ describe("express with postman-echo", function () {
             .get("/delay/3")
             .set("x-sync-wait", "eek")
             .set("Accept", "application/json")
-            .expect(400, {err: "x-sync-wait should be a number between 0.25 and 29"}, done);
+            .expect(400, {err: "x-sync-wait should be a number between 0.25 and 59"}, done);
     });
 
     it("it validates x-sync-wait is > lower bound", (done) => {
@@ -171,15 +171,15 @@ describe("express with postman-echo", function () {
             .get("/delay/3")
             .set("x-sync-wait", "0.0001")
             .set("Accept", "application/json")
-            .expect(400, {err: "x-sync-wait should be a number between 0.25 and 29"}, done);
+            .expect(400, {err: "x-sync-wait should be a number between 0.25 and 59"}, done);
     });
 
     it("it validates x-sync-wait is < upper bound", (done) => {
         request(server)
             .get("/delay/3")
-            .set("x-sync-wait", "30")
+            .set("x-sync-wait", "60")
             .set("Accept", "application/json")
-            .expect(400, {err: "x-sync-wait should be a number between 0.25 and 29"}, done);
+            .expect(400, {err: "x-sync-wait should be a number between 0.25 and 59"}, done);
     });
 
     it("it times out if x-sync-wait shorter than initial response", (done) => {
