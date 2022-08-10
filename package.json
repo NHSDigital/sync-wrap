@@ -1,5 +1,0 @@
-{
-  "devDependencies": {
-    "mocha-junit-reporter": "^2.0.2"
-  }
-}
