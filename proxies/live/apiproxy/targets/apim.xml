@@ -5,6 +5,6 @@
     {{ HOSTED_TARGET_CONNECTION }}
     <Properties>
       <Property name="io.timeout.millis">65000</Property>
-  </Properties>
+    </Properties>
   </HTTPTargetConnection>
 </TargetEndpoint>
