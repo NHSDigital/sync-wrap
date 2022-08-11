@@ -335,16 +335,16 @@ async function proxy(req, res, next) {
         if(isNaN(syncWait)){
             res.status(400);
             res.json({
-                err: "x-sync-wait should be a number between 0.25 and 29"
+                err: "x-sync-wait should be a number between 0.25 and 59"
             });
             next();
             return;
         }
         syncWait = parseFloat(syncWait);
-        if (syncWait < 0.25 || syncWait > 29) {
+        if (syncWait < 0.25 || syncWait > 59) {
             res.status(400);
             res.json({
-                err: "x-sync-wait should be a number between 0.25 and 29"
+                err: "x-sync-wait should be a number between 0.25 and 59"
             });
             next();
             return;

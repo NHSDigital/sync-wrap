@@ -11,7 +11,7 @@ clean:
 	rm -rf ./node_modules
 
 install:
-	npm install --include=dev
+	npm install --include=dev --legacy-peer-deps
 
 update:
 	npm update
