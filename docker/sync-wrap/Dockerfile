@@ -12,4 +12,5 @@ RUN chmod -R a+x /app
 USER nobody
 
 #EXPOSE 9000
+#test
 CMD ["node", "main.js"]
