@@ -1,3 +1,3 @@
 # sync-wrap
 
-synchronously wrapping asynchronous responses 
+synchronously wrapping asynchronous responses
