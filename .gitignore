@@ -17,6 +17,7 @@ __pycache__/
 *.orig
 *.squashfs
 *.retry
+.envrc
 
 # node
 node_modules/
