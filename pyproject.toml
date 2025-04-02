@@ -16,7 +16,7 @@ authors = [
 readme = 'README.md'
 
 repository = "https://github.com/NHSDigital/sync-wrap"
-homepage = ""
+homepage = "https://github.com/NHSDigital/sync-wrap"
 
 keywords = ["healthcare", "uk", "nhs"]
 
