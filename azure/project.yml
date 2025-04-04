@@ -2,3 +2,4 @@ variables:
   service_name: sync-wrap
   service_base_path: sync-wrap
   short_service_name: sync-wrap
+  python_version: 3.10
