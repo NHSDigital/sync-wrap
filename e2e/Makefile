@@ -22,8 +22,10 @@ TEST_CMD := pytest \
 		--api-name=sync-wrap \
 		--proxy-name=$(PROXY_NAME) \
 
-ifdef APIGEE_ORGANIZATION
-  TEST_CMD += --apigee-organization=$(APIGEE_ORGANIZATION)
+ifeq ($(APIGEE_ORGANIZATION), nhsd-prod)
+	TEST_CMD += --apigee-organization=$(APIGEE_ORGANIZATION) \
+				--apigee-app-id=$(APIGEE_APP_ID) \
+				--status-endpoint-api-key=$(STATUS_ENDPOINT_API_KEY)
 endif
 
 test:
