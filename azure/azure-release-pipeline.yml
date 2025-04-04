@@ -66,6 +66,7 @@ extends:
         post_deploy:
           - template: templates/e2e.yml
             parameters:
+              app_id: "84aa2219-7170-4279-93fb-3d37b89bbc01"
               test_type: smoketest
         depends_on:
           - internal_qa
@@ -73,6 +74,7 @@ extends:
         post_deploy:
           - template: templates/e2e.yml
             parameters:
+              app_id: "a50e2f01-ea28-41c9-8666-850c034ddd82"
               test_type: smoketest
         depends_on:
           - internal_qa
@@ -80,6 +82,7 @@ extends:
         post_deploy:
           - template: templates/e2e.yml
             parameters:
+              app_id: "72ada63b-9d70-4ca2-b9f2-cd1ce74c2dde"
               test_type: smoketest
         depends_on:
           - int

@@ -1,5 +1,8 @@
 parameters:
   - name: test_type
+  - name: app_id
+    type: string
+    default: ""
 
 steps:
 
@@ -19,12 +22,12 @@ steps:
       displayName: poetry install
 
     - bash: |
-        export RELEASE_RELEASEID=$(Build.BuildId)
         export SOURCE_COMMIT_ID=$(Build.SourceVersion)
         export PROXY_NAME="$(FULLY_QUALIFIED_SERVICE_NAME)"
         export APIGEE_ACCESS_TOKEN="$(secret.AccessToken)"
-        export APIGEE_ENVIRONMENT="$(APIGEE_ENVIRONMENT)"
         export APIGEE_ORGANIZATION="nhsd-$(APIGEE_ORGANIZATION)"
+        export APIGEE_APP_ID=${{ parameters.app_id }}
+        export STATUS_ENDPOINT_API_KEY="$(STATUS_ENDPOINT_API_KEY)"
         make -C e2e ${{ parameters.test_type }}
 
       workingDirectory: $(SERVICE_DIR)
