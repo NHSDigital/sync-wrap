@@ -60,5 +60,5 @@ extends:
           testResultsFormat: "JUnit"
           testResultsFiles: "./reports/tests/*.xml"
           failTaskOnFailedTests: true
+          searchFolder: "${{ variables.service_name }}"
         displayName: publish test report
-        workingDirectory: "${{ variables.service_name }}"
