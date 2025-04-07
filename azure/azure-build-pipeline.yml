@@ -57,11 +57,11 @@ extends:
         workingDirectory: "${{ variables.service_name }}"
       - bash: |
           if [ ! -f "reports/tests/async-slowapp.xml" ] || [ ! -f "reports/tests/sync-wrap.xml" ]; then
-            echo "Test results not found"
+            echo "Test reports not found"
             exit -1
           fi
         workingDirectory: ${{ variables.service_name }}
-        displayName: Check test results exist
+        displayName: Check test reports exist
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: "JUnit"
