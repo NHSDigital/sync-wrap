@@ -61,3 +61,4 @@ extends:
           testResultsFiles: "./reports/tests/*.xml"
           failTaskOnFailedTests: true
         displayName: publish test report
+        workingDirectory: "${{ variables.service_name }}"
