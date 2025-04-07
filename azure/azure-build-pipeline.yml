@@ -58,7 +58,6 @@ extends:
       - task: PublishTestResults@2
         inputs:
           testResultsFormat: "JUnit"
-          testResultsFiles: "./reports/tests/*.xml"
+          testResultsFiles: "../../reports/tests/*.xml"
           failTaskOnFailedTests: true
-          searchFolder: "${{ variables.service_name }}"
         displayName: publish test report
