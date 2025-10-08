@@ -66,5 +66,5 @@ extends:
         inputs:
           testResultsFormat: "JUnit"
           testResultsFiles: "${{ variables.service_name }}/reports/tests/*.xml"
-          failTaskOnFailedTests: false
+          failTaskOnFailedTests: true
         displayName: publish test report
