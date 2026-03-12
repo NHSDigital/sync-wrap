@@ -19,7 +19,7 @@ describe("express with google upstream and botli decompress", function () {
         env = process.env;
         let app = require("./app");
         app.setup({
-            UPSTREAM: "https://www.google.co.uk",
+            UPSTREAM: "www.google.co.uk",
             LOG_LEVEL: "DEBUG",
             UNBOTLI: "true"
         });
@@ -47,6 +47,7 @@ describe("express with google upstream and botli decompress", function () {
     it("returns good content for / with accept-encoding and User-Agent", (done) => {
         request(server)
             .get("/")
+            .redirects(1)
             .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
             .set("Accept-Encoding", "gzip, deflate")
             .set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36")
@@ -60,6 +61,7 @@ describe("express with google upstream and botli decompress", function () {
     it("[DEBUG] returns good content for / with accept-encoding and User-Agent", (done) => {
         request(server)
             .get("/")
+            .redirects(1)
             .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
             .set("Accept-Encoding", "gzip, deflate")
             .set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36")
@@ -81,6 +83,7 @@ describe("express with google upstream and botli decompress", function () {
     it("returns good content for / with chrome headers", (done) => {
         request(server)
             .get("/")
+            .redirects(1)
             .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
             .set("Accept-Encoding", "gzip, deflate")
             .set("Cache-Control", "no-cache")
@@ -102,6 +105,7 @@ describe("express with google upstream and botli decompress", function () {
     it("[DEBUG] returns good content for / with chrome headers", (done) => {
         request(server)
             .get("/")
+            .redirects(1)
             .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
             .set("Accept-Encoding", "gzip, deflate")
             .set("Cache-Control", "no-cache")
@@ -138,7 +142,7 @@ describe("express with google upstream without botli decompress", function () {
 
         let app = require("./app");
         app.setup({
-            UPSTREAM: "https://www.google.co.uk",
+            UPSTREAM: "www.google.co.uk",
             LOG_LEVEL: (process.env.NODE_ENV === "test" ? "warn": "debug"),
             UNBOTLI: "false"
         });
@@ -159,6 +163,7 @@ describe("express with google upstream without botli decompress", function () {
     it("returns content-encoding br / with accept-encoding and User-Agent", (done) => {
         request(server)
             .get("/")
+            .redirects(1)
             .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
             .set("Accept-Encoding", "gzip, deflate, br")
             .set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36")
