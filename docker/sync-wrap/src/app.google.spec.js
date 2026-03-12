@@ -58,28 +58,6 @@ describe("express with google upstream and botli decompress", function () {
             .expect(200, done);
     });
 
-    it("[DEBUG] returns good content for / with accept-encoding and User-Agent", (done) => {
-        request(server)
-            .get("/")
-            .redirects(1)
-            .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-            .set("Accept-Encoding", "gzip, deflate")
-            .set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36")
-            // .expect(r => {
-            //     expect(r.text).to.be.a("string").and.satisfy(body => body.startsWith("<!doctype html>"));
-            //     assert.equal(r.headers["content-encoding"], "gzip");
-            // })
-            // .expect(200, done);
-            
-            .expect((res) => {
-            console.log("DEBUG status:", res.status);
-            console.log("DEBUG headers:", res.headers);
-            const snippet = (res.text || "").slice(0, 500);
-            console.log("DEBUG body first 500 chars:\n", snippet);
-            })
-            .expect(200, done);
-    });
-
     it("returns good content for / with chrome headers", (done) => {
         request(server)
             .get("/")
@@ -102,34 +80,6 @@ describe("express with google upstream and botli decompress", function () {
             .expect(200, done);
     });
 
-    it("[DEBUG] returns good content for / with chrome headers", (done) => {
-        request(server)
-            .get("/")
-            .redirects(1)
-            .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-            .set("Accept-Encoding", "gzip, deflate")
-            .set("Cache-Control", "no-cache")
-            .set("Connection", "keep-alive")
-            .set("Pragma", "no-cache")
-            .set("Sec-Fetch-Dest", "document")
-            .set("Sec-Fetch-Mode", "navigate")
-            .set("Sec-Fetch-Site", "none")
-            .set("Sec-Fetch-User", "?1")
-            .set("Upgrade-Insecure-Requests", "1")
-            .set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36")
-            // .expect(r => {
-            //     expect(r.text).to.be.a("string").and.satisfy(body => body.startsWith("<!doctype html>"));
-            //     assert.equal(r.headers["content-encoding"], "gzip");
-            // })
-            // .expect(200, done);
-            .expect((res) => {
-            console.log("DEBUG status:", res.status);
-            console.log("DEBUG headers:", res.headers);
-            const snippet = (res.text || "").slice(0, 500);
-            console.log("DEBUG body first 500 chars:\n", snippet);
-            })
-            .expect(200, done);
-    });
 });
 
 
