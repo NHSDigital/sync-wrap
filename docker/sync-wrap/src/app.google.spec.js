@@ -47,6 +47,7 @@ describe("express with google upstream and botli decompress", function () {
     it("returns good content for / with accept-encoding and User-Agent", (done) => {
         request(server)
             .get("/")
+            .redirects(1)
             .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
             .set("Accept-Encoding", "gzip, deflate, br")
             .set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36")
