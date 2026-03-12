@@ -61,7 +61,7 @@ describe("express with google upstream and botli decompress", function () {
         request(server)
             .get("/")
             .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-            .set("Accept-Encoding", "gzip, deflate, br")
+            .set("Accept-Encoding", "gzip, deflate")
             .set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36")
             // .expect(r => {
             //     expect(r.text).to.be.a("string").and.satisfy(body => body.startsWith("<!doctype html>"));
@@ -103,7 +103,7 @@ describe("express with google upstream and botli decompress", function () {
         request(server)
             .get("/")
             .set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-            .set("Accept-Encoding", "gzip, deflate, br")
+            .set("Accept-Encoding", "gzip, deflate")
             .set("Cache-Control", "no-cache")
             .set("Connection", "keep-alive")
             .set("Pragma", "no-cache")
