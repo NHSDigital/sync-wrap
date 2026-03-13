@@ -40,26 +40,31 @@ extends:
           - template: templates/e2e.yml
             parameters:
               test_type: e2e
+              python_version: ${{ variables.python_version}}
       - environment: internal-dev-sandbox
         post_deploy:
           - template: templates/e2e.yml
             parameters:
               test_type: smoketest
+              python_version: ${{ variables.python_version}}
       - environment: internal-qa
         post_deploy:
           - template: templates/e2e.yml
             parameters:
               test_type: e2e
+              python_version: ${{ variables.python_version}}
       - environment: internal-qa-sandbox
         post_deploy:
           - template: templates/e2e.yml
             parameters:
               test_type: smoketest
+              python_version: ${{ variables.python_version}}
       - environment: ref
         post_deploy:
           - template: templates/e2e.yml
             parameters:
               test_type: smoketest
+              python_version: ${{ variables.python_version}}
         depends_on:
           - internal_qa
       - environment: int
@@ -68,6 +73,7 @@ extends:
             parameters:
               app_id: "84aa2219-7170-4279-93fb-3d37b89bbc01"
               test_type: smoketest
+              python_version: ${{ variables.python_version}}
         depends_on:
           - internal_qa
       - environment: sandbox
@@ -76,6 +82,7 @@ extends:
             parameters:
               app_id: "a50e2f01-ea28-41c9-8666-850c034ddd82"
               test_type: smoketest
+              python_version: ${{ variables.python_version}}
         depends_on:
           - internal_qa
       - environment: prod
@@ -84,6 +91,7 @@ extends:
             parameters:
               app_id: "72ada63b-9d70-4ca2-b9f2-cd1ce74c2dde"
               test_type: smoketest
+              python_version: ${{ variables.python_version}}
         depends_on:
           - int
           - ref
