@@ -3,8 +3,14 @@ parameters:
   - name: app_id
     type: string
     default: ""
+  - name: python_version
+    default: ""
 
 steps:
+    - task: UsePythonVersion@0
+      displayName: 'Use Python 3.10'
+      inputs:
+        versionSpec: '3.10'
 
     - task: s3-cache-action@1
       inputs:
